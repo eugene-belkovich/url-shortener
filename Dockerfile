@@ -1,21 +1,25 @@
-FROM jod-alpine3.21
+FROM node:20-alpine3.21
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
+
+# (DO NOT REMOVE) Fix: Install OpenSSL before npm install.
+RUN apk add --no-cache openssl
 
 RUN npm install
 
 COPY . .
 
-COPY .env* ./
-
 RUN npx prisma generate
 
-RUN npm run build
+#COPY ./scripts/run_app_dev.sh /app/scripts/run_app_dev.sh
+#RUN chmod +x /app/scripts/run_app_dev.sh
+#
+#CMD ["/bin/sh", "-c", "/app/scripts/run_app_dev.sh"]
 
 EXPOSE ${PORT}
 
 ENV PORT 3000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start:dev"]

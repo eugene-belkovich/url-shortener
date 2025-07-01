@@ -3,13 +3,13 @@ import {UrlService} from './url.service';
 import {CreateUrlDto} from './dto/create-url.dto';
 import {UpdateUrlDto} from './dto/update-url.dto';
 
-@Controller('url')
+@Controller('urls')
 export class UrlController {
   private readonly logger = new Logger(UrlController.name);
 
   constructor(private readonly urlService: UrlService) {}
 
-  @Post('urls')
+  @Post()
   async createShortUrl(@Body() createUrlDto: CreateUrlDto): Promise<any> {
     this.logger.log(`Creating short URL for: ${createUrlDto.originalUrl}`);
     return await this.urlService.createShortUrl(createUrlDto);
