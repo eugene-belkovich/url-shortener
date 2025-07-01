@@ -1,10 +1,11 @@
-import {Controller, Post, Get, Body, UseGuards, Logger} from '@nestjs/common';
+import {Controller, Post, Get, Body, UseGuards, Logger, Res, HttpStatus} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {SignupDto} from './dto/signupDto';
 import {SigninDto} from './dto/signinDto';
 import {AuthResponseDto, UserResponseDto} from './dto/auth-response.dto';
 import {JwtAuthGuard} from './guards/jwt-auth.guard';
 import {CurrentUser} from './decorators/current-user.decorator';
+import {FastifyReply} from 'fastify';
 
 @Controller('auth')
 export class AuthController {
@@ -29,5 +30,12 @@ export class AuthController {
   async getProfile(@CurrentUser() user: UserResponseDto): Promise<UserResponseDto> {
     this.logger.log(`Profile request for user: ${user.email}`);
     return user;
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@CurrentUser() user: UserResponseDto, @Res() res: FastifyReply) {
+    this.logger.log(`User logged out: ${user.id}`);
+    return res.status(HttpStatus.OK).send({message: 'Logged out'});
   }
 }
