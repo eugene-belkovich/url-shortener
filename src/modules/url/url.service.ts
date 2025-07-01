@@ -1,6 +1,5 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {CreateUrlDto} from './dto/create-url.dto';
-import {UpdateUrlDto} from './dto/update-url.dto';
 import {generateSlug} from '@/common/utils/slug.util';
 import {UrlRepository} from '@/modules/url/url.repository';
 import {ConfigService} from '@nestjs/config';
