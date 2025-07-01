@@ -11,6 +11,26 @@ export interface CreateUrlParams {
   slug: string;
 }
 
+export interface TrackEventRow {
+  id: string;
+  url_id: string;
+  ip_address?: string;
+  user_agent?: string;
+  visited_at: Date;
+  original_url: string;
+  slug: string;
+}
+
+export interface TrackEventParams {
+  id: string;
+  urlId: string;
+  ipAddress?: string;
+  userAgent?: string;
+  visitedAt: Date;
+  originalUrl: string;
+  slug: string;
+}
+
 export interface SelectPlaceholder {
   '1': number;
 }
