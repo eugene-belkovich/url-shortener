@@ -16,6 +16,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
+    "resolveJsonModule": true,
+    "rootDir": "./",
+    "inlineSources": true,
     "noFallthroughCasesInSwitch": false
   }
 }
