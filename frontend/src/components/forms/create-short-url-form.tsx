@@ -12,6 +12,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/compo
 import {toast} from 'sonner'
 import {Url} from '@/types/api'
 import {AxiosError} from 'axios'
+import {Copy} from 'lucide-react'
 
 interface CreateUrlFormProps {
   onSuccess?: (url: Url) => void
@@ -79,6 +80,15 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
     }
   }
 
+  const handleCopyToClipboard = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success('Short URL copied to clipboard!')
+    } catch {
+      toast.error('Failed to copy to clipboard')
+    }
+  }
+
   return (
     <Card className="mx-auto w-full max-w-md">
       <CardHeader>
@@ -113,10 +123,22 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
 
           {submitResponse && (
             <div className="rounded-md border border-green-200 bg-green-50 p-3">
-              <p className="text-sm text-green-800">Success! Here's your short URL:</p>
-              <a className="font-sm text-sm text-blue-800 hover:underline dark:text-blue-800" href={submitResponse}>
-                {submitResponse}
-              </a>
+              <p className="text-sm text-green-800">Success! Here&apos;s your short URL:</p>
+              <div className="mt-2 flex items-center gap-2">
+                <a className="font-sm flex-1 text-sm text-blue-800 hover:underline dark:text-blue-800" href={submitResponse}>
+                  {submitResponse}
+                </a>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleCopyToClipboard(submitResponse)}
+                  className="h-8 w-8 p-0"
+                  aria-label="Copy short URL to clipboard"
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
 
