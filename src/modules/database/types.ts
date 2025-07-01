@@ -10,3 +10,7 @@ export interface CreateUrlParams {
   originalUrl: string;
   slug: string;
 }
+
+export interface SelectPlaceholder {
+  '1': number;
+}

@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {ConflictException, Injectable, Logger} from '@nestjs/common';
 import {CreateUrlDto} from './dto/create-url.dto';
 import {generateSlug} from '@/common/utils/slug.util';
 import {UrlRepository} from '@/modules/url/url.repository';
@@ -19,6 +19,11 @@ export class UrlService {
 
   async createShortUrl(createUrlDto: CreateUrlDto): Promise<UrlResponseDto> {
     const {originalUrl} = createUrlDto;
+
+    const existingUrl = await this.urlRepository.existsByOriginalUrl(originalUrl);
+    if (existingUrl) {
+      throw new ConflictException(`OriginalUrl '${originalUrl}' is already processed`);
+    }
 
     const slug = generateSlug();
 

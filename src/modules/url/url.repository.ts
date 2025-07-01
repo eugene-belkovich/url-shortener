@@ -1,5 +1,5 @@
 import {Injectable, Logger} from '@nestjs/common';
-import {CreateUrlParams, UrlRow} from '@/modules/database/types';
+import {CreateUrlParams, SelectPlaceholder, UrlRow} from '@/modules/database/types';
 import {PrismaService} from '@/modules/database/prisma.service';
 
 @Injectable()
@@ -26,6 +26,34 @@ export class UrlRepository {
       return result[0];
     } catch (error) {
       this.logger.error(`Failed to create URL: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async existsByOriginalUrl(originalUrl: string): Promise<boolean> {
+    const query = `
+    SELECT 1 FROM urls WHERE original_url = $1 LIMIT 1
+  `;
+
+    try {
+      const result: SelectPlaceholder[] = await this.prisma.$queryRawUnsafe(query, originalUrl);
+      return result.length > 0;
+    } catch (error) {
+      this.logger.error(`Failed to check original_url existence ${originalUrl}: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async existsBySlug(slug: string): Promise<boolean> {
+    const query = `
+    SELECT 1 FROM urls WHERE slug = $1 LIMIT 1
+  `;
+
+    try {
+      const result: SelectPlaceholder[] = await this.prisma.$queryRawUnsafe(query, slug);
+      return result.length > 0;
+    } catch (error) {
+      this.logger.error(`Failed to check slug existence ${slug}: ${error.message}`, error);
       throw error;
     }
   }

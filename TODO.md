@@ -25,10 +25,10 @@ Extra Credit:
 ## MY 
 - [x] initial nest.js project setup
 - [x] generate unique slug
-- [ ] validate initial url that is url -> pattern validation
-- [ ] if url invalid -> error
-- [ ] create and save to db
-- [ ] no duplicates on create, isExist
+- [x] validate initial url that is url -> pattern validation
+- [x] if url invalid -> error
+- [x] create and save to db
+- [x] no duplicates on create, isExist
 
 work:
 - [ ] if slug correct -> redirect to url
@@ -53,8 +53,8 @@ work:
 
 
 BACKEND:
-- [ ] Save a record of the shortened URL to a database
-- [ ] Ensure the slug of the URL (abc123 in the screenshot above) is unique
+- [x] Save a record of the shortened URL to a database
+- [x] Ensure the slug of the URL (abc123 in the screenshot above) is unique
 - [ ] When the shortened URL is accessed, redirect to the stored URL
 - [ ] If an invalid slug is accessed, rerudrn error
 - [ ] You should have a list of all URLs saved in the database
