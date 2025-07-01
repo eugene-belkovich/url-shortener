@@ -1,6 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {CreateUrlParams, SelectPlaceholder, UrlRow} from '@/modules/database/types';
 import {PrismaService} from '@/modules/database/prisma.service';
+import {Prisma, PrismaClient} from '@prisma/client';
 
 @Injectable()
 export class UrlRepository {
@@ -8,9 +9,11 @@ export class UrlRepository {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async createShortUrl(params: CreateUrlParams): Promise<UrlRow> {
+  async createShortUrl(params: CreateUrlParams, prisma?: Prisma.TransactionClient): Promise<UrlRow> {
+    const prismaClient = prisma ?? this.prisma;
+
     try {
-      const result: UrlRow[] = await this.prisma.$queryRaw`
+      const result: UrlRow[] = await prismaClient.$queryRaw`
         INSERT INTO urls (original_url, slug, updated_at)
         VALUES (${params.originalUrl}, ${params.slug}, NOW())
         RETURNING id, original_url, slug, created_at, updated_at
@@ -41,9 +44,10 @@ export class UrlRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<UrlRow | null> {
+  async findBySlug(slug: string, prisma?: Prisma.TransactionClient): Promise<UrlRow | null> {
+    const prismaClient = prisma ?? this.prisma;
     try {
-      const result: UrlRow[] = await this.prisma.$queryRaw`
+      const result: UrlRow[] = await prismaClient.$queryRaw`
       SELECT id, original_url, slug, created_at, updated_at
       FROM urls
       WHERE slug = ${slug} 
@@ -55,9 +59,11 @@ export class UrlRepository {
     }
   }
 
-  async updateSlug(oldSlug: string, newSlug: string): Promise<UrlRow | null> {
+  async updateSlug({oldSlug, newSlug}, prisma?: Prisma.TransactionClient): Promise<UrlRow | null> {
+    const prismaClient = prisma ?? this.prisma;
+
     try {
-      const result: UrlRow[] = await this.prisma.$queryRaw`
+      const result: UrlRow[] = await prismaClient.$queryRaw`
         UPDATE urls
         SET slug = ${newSlug}, updated_at = NOW()
         WHERE slug = ${oldSlug}
@@ -76,13 +82,15 @@ export class UrlRepository {
     }
   }
 
-  async existsByOriginalUrl(originalUrl: string): Promise<boolean> {
+  async existsByOriginalUrl(originalUrl: string, prisma?: Prisma.TransactionClient): Promise<boolean> {
+    const prismaClient = prisma ?? this.prisma;
+
     const query = `
     SELECT 1 FROM urls WHERE original_url = $1 LIMIT 1
   `;
 
     try {
-      const result: SelectPlaceholder[] = await this.prisma.$queryRaw`
+      const result: SelectPlaceholder[] = await prismaClient.$queryRaw`
         SELECT 1 
         FROM urls
         WHERE original_url = ${originalUrl} 
@@ -95,13 +103,15 @@ export class UrlRepository {
     }
   }
 
-  async existsBySlug(slug: string): Promise<boolean> {
+  async existsBySlug(slug: string, prisma?: Prisma.TransactionClient): Promise<boolean> {
+    const prismaClient = prisma ?? this.prisma;
+
     const query = `
     SELECT 1 FROM urls WHERE slug = $1 LIMIT 1
   `;
 
     try {
-      const result: SelectPlaceholder[] = await this.prisma.$queryRaw`
+      const result: SelectPlaceholder[] = await prismaClient.$queryRaw`
         SELECT 1 
         FROM urls
         WHERE slug = ${slug} 

@@ -31,4 +31,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.$disconnect();
     this.logger.log('Database disconnected');
   }
+
+  async transaction<T = any>(callback: (tx: any) => Promise<T>): Promise<T> {
+    try {
+      return await this.$transaction(async tx => callback(tx));
+    } catch (error: any) {
+      this.logger.error(`Transaction failed, rollback initiated. Reason: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
 }

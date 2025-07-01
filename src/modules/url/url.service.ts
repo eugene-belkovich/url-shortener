@@ -5,6 +5,7 @@ import {UrlRepository} from '@/modules/url/url.repository';
 import {ConfigService} from '@nestjs/config';
 import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
 import {UrlRow} from '@/modules/database/types';
+import {PrismaService} from '@/modules/database/prisma.service';
 
 @Injectable()
 export class UrlService {
@@ -13,6 +14,7 @@ export class UrlService {
 
   constructor(
     private readonly urlRepository: UrlRepository,
+    private readonly prisma: PrismaService,
     private readonly configService: ConfigService
   ) {
     this.appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
@@ -21,54 +23,53 @@ export class UrlService {
   async createShortUrl(createUrlDto: CreateUrlDto): Promise<UrlResponseDto> {
     const {originalUrl} = createUrlDto;
 
-    const existingUrl = await this.urlRepository.existsByOriginalUrl(originalUrl);
-    if (existingUrl) {
-      throw new ConflictException(`OriginalUrl '${originalUrl}' is already processed`);
-    }
+    return await this.prisma.transaction<UrlResponseDto>(async tx => {
+      const existingUrl = await this.urlRepository.existsByOriginalUrl(originalUrl, tx);
+      if (existingUrl) {
+        throw new ConflictException(`OriginalUrl '${originalUrl}' is already processed`);
+      }
 
-    const slug = generateSlug();
+      const slug = generateSlug();
 
-    try {
-      const urlRecord: UrlRow = await this.urlRepository.createShortUrl({
-        originalUrl,
-        slug
-      });
+      const urlRecord: UrlRow = await this.urlRepository.createShortUrl(
+        {
+          originalUrl,
+          slug
+        },
+        tx
+      );
 
       this.logger.log(`Created short URL: ${slug} -> ${originalUrl}`);
 
       return this.mapToResponseDto(urlRecord);
-    } catch (error: any) {
-      const message = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Failed to create URL: ${message}`, error);
-      throw error;
-    }
+    });
   }
 
   async updateSlug(oldSlug: string, newSlug: string): Promise<UrlResponseDto> {
-    if (!isValidSlug(oldSlug)) {
-      throw new BadRequestException('Invalid old slug format');
-    }
+    return await this.prisma.transaction<UrlResponseDto>(async tx => {
+      if (!isValidSlug(oldSlug)) {
+        throw new BadRequestException('Invalid old slug format');
+      }
 
-    if (!isValidSlug(newSlug)) {
-      throw new BadRequestException('Invalid new slug format');
-    }
+      if (!isValidSlug(newSlug)) {
+        throw new BadRequestException('Invalid new slug format');
+      }
 
-    if (oldSlug === newSlug) {
-      throw new BadRequestException('New slug must be different from the current slug');
-    }
+      if (oldSlug === newSlug) {
+        throw new BadRequestException('New slug must be different from the current slug');
+      }
 
-    const existingUrl = await this.urlRepository.findBySlug(oldSlug);
-    if (!existingUrl) {
-      throw new NotFoundException(`URL with slug '${oldSlug}' not found`);
-    }
+      const existingUrl = await this.urlRepository.findBySlug(oldSlug, tx);
+      if (!existingUrl) {
+        throw new NotFoundException(`URL with slug '${oldSlug}' not found`);
+      }
 
-    const slugTaken = await this.urlRepository.existsBySlug(newSlug);
-    if (slugTaken) {
-      throw new ConflictException(`Slug '${newSlug}' is already taken`);
-    }
+      const slugTaken = await this.urlRepository.existsBySlug(newSlug, tx);
+      if (slugTaken) {
+        throw new ConflictException(`Slug '${newSlug}' is already taken`);
+      }
 
-    try {
-      const updatedUrl = await this.urlRepository.updateSlug(oldSlug, newSlug);
+      const updatedUrl = await this.urlRepository.updateSlug({oldSlug, newSlug}, tx);
 
       if (!updatedUrl) {
         throw new NotFoundException(`URL with slug '${oldSlug}' not found`);
@@ -77,10 +78,7 @@ export class UrlService {
       this.logger.log(`Updated slug: ${oldSlug} -> ${newSlug}`);
 
       return this.mapToResponseDto(updatedUrl);
-    } catch (error) {
-      this.logger.error(`Failed to update slug: ${error.message}`, error);
-      throw error;
-    }
+    });
   }
 
   async getUrlBySlug(slug: string): Promise<UrlResponseDto | null> {
