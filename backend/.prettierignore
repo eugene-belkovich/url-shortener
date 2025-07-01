@@ -12,6 +12,8 @@ prisma/migrations/
 # IDE files
 .vscode/
 .idea/
+.history/
+.cursor/
 
 # Logs
 *.log
