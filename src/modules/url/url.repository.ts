@@ -11,7 +11,7 @@ export class UrlRepository {
   async createShortUrl(params: CreateUrlParams): Promise<UrlRow> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
-        INSERT INTO "Url" (original_url, slug, updated_at)
+        INSERT INTO urls (original_url, slug, updated_at)
         VALUES (${params.originalUrl}, ${params.slug}, NOW())
         RETURNING id, original_url, slug, created_at, updated_at
       `;
@@ -30,13 +30,8 @@ export class UrlRepository {
   async findAll(): Promise<UrlRow[]> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
-      SELECT
-       u.id, 
-       u.original_url, 
-       u.slug, 
-       u.created_at, 
-       u.updated_at 
-       FROM "Url" as u
+      SELECT id, original_url, slug, created_at, updated_at 
+      FROM urls
     `;
 
       return result;
@@ -50,7 +45,7 @@ export class UrlRepository {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
       SELECT id, original_url, slug, created_at, updated_at
-      FROM "Url"
+      FROM urls
       WHERE slug = ${slug} 
     `;
       return result.length > 0 ? result[0] : null;
@@ -63,7 +58,7 @@ export class UrlRepository {
   async updateSlug(oldSlug: string, newSlug: string): Promise<UrlRow | null> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
-        UPDATE "Url" 
+        UPDATE urls
         SET slug = ${newSlug}, updated_at = NOW()
         WHERE slug = ${oldSlug}
         RETURNING id, original_url, slug, created_at, updated_at
@@ -89,7 +84,7 @@ export class UrlRepository {
     try {
       const result: SelectPlaceholder[] = await this.prisma.$queryRaw`
         SELECT 1 
-        FROM "Url" 
+        FROM urls
         WHERE original_url = ${originalUrl} 
         LIMIT 1
       `;
@@ -108,7 +103,7 @@ export class UrlRepository {
     try {
       const result: SelectPlaceholder[] = await this.prisma.$queryRaw`
         SELECT 1 
-        FROM "Url" 
+        FROM urls
         WHERE slug = ${slug} 
         LIMIT 1
       `;
@@ -122,7 +117,9 @@ export class UrlRepository {
 
   async count(): Promise<number> {
     try {
-      const result: {count: number}[] = await this.prisma.$queryRaw`SELECT COUNT(*)::INTEGER as count FROM "Url"`;
+      const result: {count: number}[] = await this.prisma.$queryRaw`
+        SELECT COUNT(*)::INTEGER as count FROM urls
+      `;
       return result[0]?.count ?? 0;
     } catch (error: any) {
       this.logger.error(`Failed to count URLs: ${error.message}`, error);
