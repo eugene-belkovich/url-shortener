@@ -1,7 +1,7 @@
 import {Controller, Get, Post, Body, Patch, Param, Delete, Logger} from '@nestjs/common';
 import {UrlService} from './url.service';
 import {CreateUrlDto} from './dto/create-url.dto';
-import {UpdateUrlDto} from './dto/update-url.dto';
+import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
 
 @Controller('urls')
 export class UrlController {
@@ -10,28 +10,14 @@ export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
   @Post()
-  async createShortUrl(@Body() createUrlDto: CreateUrlDto): Promise<any> {
+  async createShortUrl(@Body() createUrlDto: CreateUrlDto): Promise<UrlResponseDto> {
     this.logger.log(`Creating short URL for: ${createUrlDto.originalUrl}`);
     return await this.urlService.createShortUrl(createUrlDto);
   }
 
   @Get()
-  findAll() {
-    return this.urlService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.urlService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUrlDto: UpdateUrlDto) {
-    return this.urlService.update(+id, updateUrlDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.urlService.remove(+id);
+  async getAllUrls(): Promise<UrlListResponseDto> {
+    this.logger.log(`Getting URLs list`);
+    return await this.urlService.getAllUrls();
   }
 }

@@ -29,4 +29,36 @@ export class UrlRepository {
       throw error;
     }
   }
+
+  async findAll(): Promise<UrlRow[]> {
+    const query = `
+      SELECT 
+        u.id,
+        u.original_url,
+        u.slug,
+        u.created_at,
+        u.updated_at
+      FROM "Url" as u
+    `;
+
+    try {
+      const result: UrlRow[] = await this.prisma.$queryRawUnsafe(query);
+      return result;
+    } catch (error: any) {
+      this.logger.error(`Failed to find all URLs: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async count(): Promise<number> {
+    const query = `SELECT COUNT(*)::INTEGER as count FROM "Url"`;
+
+    try {
+      const result: {count: number}[] = await this.prisma.$queryRawUnsafe(query);
+      return result[0]?.count ?? 0;
+    } catch (error: any) {
+      this.logger.error(`Failed to count URLs: ${error.message}`, error);
+      throw error;
+    }
+  }
 }

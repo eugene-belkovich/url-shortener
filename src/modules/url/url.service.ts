@@ -4,6 +4,7 @@ import {UpdateUrlDto} from './dto/update-url.dto';
 import {generateSlug} from '@/common/utils/slug.util';
 import {UrlRepository} from '@/modules/url/url.repository';
 import {ConfigService} from '@nestjs/config';
+import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
 
 @Injectable()
 export class UrlService {
@@ -17,7 +18,7 @@ export class UrlService {
     this.appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
   }
 
-  async createShortUrl(createUrlDto: CreateUrlDto): Promise<any> {
+  async createShortUrl(createUrlDto: CreateUrlDto): Promise<UrlResponseDto> {
     const {originalUrl} = createUrlDto;
 
     const slug = generateSlug();
@@ -31,29 +32,25 @@ export class UrlService {
       this.logger.log(`Created short URL: ${slug} -> ${originalUrl}`);
 
       return this.mapToResponseDto(urlRecord);
-    } catch (error) {
-      this.logger.error(`Failed to create URL: ${error.message}`, error);
+    } catch (error: any) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to create URL: ${message}`, error);
       throw error;
     }
   }
 
-  findAll() {
-    return `This action returns all url`;
+  async getAllUrls(): Promise<UrlListResponseDto> {
+    const [urls, total] = await Promise.all([this.urlRepository.findAll(), this.urlRepository.count()]);
+
+    const urlDtos = urls.map(url => this.mapToResponseDto(url));
+
+    return {
+      urls: urlDtos,
+      total
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} url`;
-  }
-
-  update(id: number, updateUrlDto: UpdateUrlDto) {
-    return `This action updates a #${id} url`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} url`;
-  }
-
-  private mapToResponseDto(urlRecord: any): any {
+  private mapToResponseDto(urlRecord: any): UrlResponseDto {
     return {
       slug: urlRecord.slug,
       originalUrl: urlRecord.original_url || urlRecord.originalUrl,
