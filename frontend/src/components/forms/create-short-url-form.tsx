@@ -1,35 +1,31 @@
 'use client'
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import { createUrlSchema, CreateUrlFormData } from '@/lib/schemas'
-import { UrlService } from '@/services/url.service'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { toast } from 'sonner'
-import { Url } from '@/types/api'
+import {useState} from 'react'
+import {useForm} from 'react-hook-form'
+import {zodResolver} from '@hookform/resolvers/zod'
+import {useMutation} from '@tanstack/react-query'
+import {createUrlSchema, CreateUrlFormData} from '@/lib/schemas'
+import {UrlService} from '@/services/url.service'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
+import {toast} from 'sonner'
+import {Url} from '@/types/api'
+import {AxiosError} from 'axios'
 
 interface CreateUrlFormProps {
   onSuccess?: (url: Url) => void
   className?: string
 }
 
-export const CreateShortUrlForm = ({ onSuccess }: CreateUrlFormProps) => {
+export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitResponse, setSubmitResponse] = useState<string | null>(null)
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {errors},
     reset,
     setValue,
     watch,
@@ -42,15 +38,18 @@ export const CreateShortUrlForm = ({ onSuccess }: CreateUrlFormProps) => {
 
   const createUrlMutation = useMutation({
     mutationFn: UrlService.createUrl,
-    onSuccess: (data) => {
+    onSuccess: data => {
+      console.log({data})
       toast.success('Short URL created successfully')
+      setSubmitResponse(data.shortUrl)
       reset()
       onSuccess?.(data)
     },
-    onError: (error) => {
-      console.log({ error })
-      setSubmitError(error.message || 'ERROR CREATE URL')
-      toast.error(error.message || 'ERROR CREATE URL')
+    onError: (error: AxiosError) => {
+      // @ts-ignore
+      const errorMessage = error?.response?.data?.message || error.message || 'Failed to create URL'
+      setSubmitError(errorMessage)
+      toast.error(errorMessage)
     },
   })
 
@@ -98,20 +97,12 @@ export const CreateShortUrlForm = ({ onSuccess }: CreateUrlFormProps) => {
                 disabled={createUrlMutation.isPending}
                 className="flex-1"
               />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePasteFromClipboard}
-                disabled={createUrlMutation.isPending}
-              >
+              <Button type="button" variant="outline" onClick={handlePasteFromClipboard} disabled={createUrlMutation.isPending}>
                 Insert
               </Button>
             </div>
-            {errors.originalUrl && (
-              <p className="text-sm text-red-600">
-                {errors.originalUrl.message}
-              </p>
-            )}
+            {errors.originalUrl && <p className="text-sm text-red-600">{errors.originalUrl.message}</p>}
+            {errors.originalUrl && <p className="text-sm text-red-600">{errors.originalUrl.message}</p>}
           </div>
 
           {submitError && (
@@ -120,21 +111,21 @@ export const CreateShortUrlForm = ({ onSuccess }: CreateUrlFormProps) => {
             </div>
           )}
 
+          {submitResponse && (
+            <div className="rounded-md border border-green-200 bg-green-50 p-3">
+              <p className="text-sm text-green-800">Success! Here's your short URL:</p>
+              <a className="font-sm text-sm text-blue-800 hover:underline dark:text-blue-800" href={submitResponse}>
+                {submitResponse}
+              </a>
+            </div>
+          )}
+
           <div className="flex gap-2 pt-4">
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={createUrlMutation.isPending || !originalUrl}
-            >
+            <Button type="submit" className="flex-1" disabled={createUrlMutation.isPending || !originalUrl}>
               {createUrlMutation.isPending ? 'Shortening...' : 'Shorten URL'}
             </Button>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClearForm}
-              disabled={createUrlMutation.isPending}
-            >
+            <Button type="button" variant="outline" onClick={handleClearForm} disabled={createUrlMutation.isPending}>
               Clear
             </Button>
           </div>
