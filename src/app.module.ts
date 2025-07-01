@@ -6,6 +6,7 @@ import {UrlModule} from './modules/url/url.module';
 import {DatabaseModule} from '@/modules/database/database.module';
 import {RedirectModule} from '@/modules/redirect/redirect.module';
 import {AnalyticsModule} from '@/modules/analytics/analytics.module';
+import {AuthModule} from '@/modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import {AnalyticsModule} from '@/modules/analytics/analytics.module';
     DatabaseModule,
     UrlModule,
     RedirectModule,
-    AnalyticsModule
+    AnalyticsModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService]
