@@ -11,9 +11,8 @@ export class AnalyticsRepository {
   async track(params: TrackEventParams): Promise<TrackEventRow> {
     try {
       const result: TrackEventRow[] = await this.prisma.$queryRaw`
-      INSERT INTO visits (url_id, ip_address, user_agent, referer, visited_at)
+      INSERT INTO analytics (url_id, ip_address, user_agent, visited_at, original_url, slug)
       VALUES (
-          ${params.id}, 
           ${params.urlId}, 
           ${params.ipAddress}, 
           ${params.userAgent}, 
@@ -21,7 +20,6 @@ export class AnalyticsRepository {
           ${params.originalUrl}, 
           ${params.slug})
       RETURNING
-           id, 
            url_id, 
            ip_address, 
            user_agent, 

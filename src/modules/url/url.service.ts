@@ -110,6 +110,7 @@ export class UrlService {
 
   private mapToResponseDto(urlRecord: UrlRow): UrlResponseDto {
     return {
+      id: urlRecord.id.toString(),
       slug: urlRecord.slug,
       originalUrl: urlRecord.original_url,
       shortUrl: `${this.appUrl}/${urlRecord.slug}`,

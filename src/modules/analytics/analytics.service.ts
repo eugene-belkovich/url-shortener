@@ -10,7 +10,14 @@ export class AnalyticsService {
 
   async track(event: TrackEventDto): Promise<void> {
     try {
-      await this.analyticsRepository.track(event);
+      await this.analyticsRepository.track({
+        urlId: typeof event.urlId === 'bigint' ? event.urlId : BigInt(event.urlId),
+        ipAddress: event.ipAddress,
+        userAgent: event.userAgent,
+        visitedAt: event.visitedAt,
+        originalUrl: event.originalUrl,
+        slug: event.slug
+      });
     } catch (error: any) {
       this.logger.error(`Failed to record visit: ${error.message}`, error);
       throw error;

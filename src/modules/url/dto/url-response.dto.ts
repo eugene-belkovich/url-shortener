@@ -1,6 +1,8 @@
 import {Expose, Transform} from 'class-transformer';
 
 export class UrlResponseDto {
+  id: string;
+
   @Expose()
   slug: string;
 

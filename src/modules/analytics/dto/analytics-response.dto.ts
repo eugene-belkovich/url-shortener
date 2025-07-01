@@ -1,5 +1,4 @@
 export interface TrackEventDto {
-  id: string;
   urlId: string;
   ipAddress?: string;
   userAgent?: string;

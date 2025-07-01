@@ -22,8 +22,7 @@ export interface TrackEventRow {
 }
 
 export interface TrackEventParams {
-  id: string;
-  urlId: string;
+  urlId: bigint;
   ipAddress?: string;
   userAgent?: string;
   visitedAt: Date;
