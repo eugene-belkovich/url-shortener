@@ -9,7 +9,10 @@ import * as compression from 'compression';
 const bootstrap = async (): Promise<void> => {
   const logger = new Logger('App');
 
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({logger: true}));
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({trustProxy: true, logger: true})
+  );
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT', 3000);

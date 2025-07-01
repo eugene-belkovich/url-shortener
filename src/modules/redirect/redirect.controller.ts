@@ -37,9 +37,11 @@ export class RedirectController {
     }
 
     try {
+      const ip = req.headers['x-forwarded-for']?.toString().split(',')[0].trim() || req.ip || '';
+
       await this.analyticsService.track({
         urlId: urlRecord.id,
-        ipAddress: '', // todo add ip
+        ipAddress: ip,
         userAgent: req.headers['user-agent'] || 'unknown',
         visitedAt: new Date(),
         originalUrl: urlRecord.originalUrl,
