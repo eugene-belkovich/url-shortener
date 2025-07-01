@@ -18,6 +18,7 @@ const bootstrap = async (): Promise<void> => {
   const port = configService.get<number>('PORT', 3000);
   const nodeEnv = configService.get<string>('NODE_ENV', 'development');
   const corsOrigin = configService.get<string>('CORS_ORIGIN', 'http://localhost:3000');
+  const corsOrigins = corsOrigin.split(',').map(origin => origin.trim());
 
   app.use(helmet());
   app.use(compression());
@@ -28,7 +29,14 @@ const bootstrap = async (): Promise<void> => {
   }
   bootstrap();
   app.enableCors({
-    origin: corsOrigin,
+    origin: (origin, callback) => {
+      if (!origin || corsOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        // @ts-ignore
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
