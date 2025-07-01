@@ -15,7 +15,7 @@ export class UrlRepository {
     try {
       const result: UrlRow[] = await prismaClient.$queryRaw`
          INSERT INTO urls (original_url, slug, user_id, updated_at)
-         VALUES (${params.originalUrl}, ${params.slug}, ${params.userId}, NOW())
+         VALUES (${params.originalUrl}, ${params.slug}, ${params.userId}::bigint, NOW())
          RETURNING id, original_url, slug, user_id, created_at, updated_at
        `;
       if (result.length === 0) {
