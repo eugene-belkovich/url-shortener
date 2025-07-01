@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {useMutation} from '@tanstack/react-query'
@@ -13,6 +13,7 @@ import {toast} from 'sonner'
 import {Url} from '@/types/api'
 import {AxiosError} from 'axios'
 import {Copy} from 'lucide-react'
+import {useRouter} from 'next/navigation'
 
 interface CreateUrlFormProps {
   onSuccess?: (url: Url) => void
@@ -22,6 +23,25 @@ interface CreateUrlFormProps {
 export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitResponse, setSubmitResponse] = useState<string | null>(null)
+  const router = useRouter()
+
+  const isValidUrl = (url: string): boolean => {
+    try {
+      const urlObj = new URL(url)
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
+    } catch {
+      return false
+    }
+  }
+
+  const handleRedirect = () => {
+    if (submitResponse && isValidUrl(submitResponse)) {
+      window.open(submitResponse, '_blank', 'noopener,noreferrer')
+    } else {
+      toast.error('Invalid short URL received')
+      router.push('/not-found')
+    }
+  }
 
   const {
     register,
@@ -47,7 +67,7 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
       onSuccess?.(data)
     },
     onError: (error: AxiosError) => {
-      // @ts-ignore
+      // @ts-expect-error - backend error response structure
       const errorMessage = error?.response?.data?.message || error.message || 'Failed to create URL'
       setSubmitError(errorMessage)
       toast.error(errorMessage)
@@ -125,7 +145,7 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
             <div className="rounded-md border border-green-200 bg-green-50 p-3">
               <p className="text-sm text-green-800">Success! Here&apos;s your short URL:</p>
               <div className="mt-2 flex items-center gap-2">
-                <a className="font-sm flex-1 text-sm text-blue-800 hover:underline dark:text-blue-800" href={submitResponse}>
+                <a className="font-sm flex-1 text-sm text-blue-800 hover:underline dark:text-blue-800" onClick={handleRedirect}>
                   {submitResponse}
                 </a>
                 <Button
