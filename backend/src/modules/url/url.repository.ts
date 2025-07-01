@@ -59,6 +59,21 @@ export class UrlRepository {
     }
   }
 
+  async findByOriginalUrl(originalUrl: string, prisma?: Prisma.TransactionClient): Promise<UrlRow | null> {
+    const prismaClient = prisma ?? this.prisma;
+    try {
+      const result: UrlRow[] = await prismaClient.$queryRaw`
+        SELECT id, original_url, slug, user_id, created_at, updated_at
+        FROM urls
+        WHERE original_url = ${originalUrl}
+      `;
+      return result.length > 0 ? result[0] : null;
+    } catch (error) {
+      this.logger.error(`Failed to find URL by originalUrl ${originalUrl}: ${error.message}`, error);
+      throw error;
+    }
+  }
+
   async updateSlug({oldSlug, newSlug}, prisma?: Prisma.TransactionClient): Promise<UrlRow | null> {
     const prismaClient = prisma ?? this.prisma;
 

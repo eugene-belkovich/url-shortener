@@ -24,8 +24,6 @@ export class RedirectController {
 
     const urlRecord = await this.urlService.getUrlBySlug(param.slug);
 
-    console.log('111', {urlRecord});
-
     if (!urlRecord || isEmpty(urlRecord.originalUrl)) {
       this.logger.warn(`URL not found for slug: ${param.slug}`);
       res.status(HttpStatus.NOT_FOUND).send({

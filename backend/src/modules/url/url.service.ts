@@ -6,6 +6,7 @@ import {ConfigService} from '@nestjs/config';
 import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
 import {UrlRow} from '@/modules/database/types';
 import {PrismaService} from '@/modules/database/prisma.service';
+import {isEmpty} from 'lodash';
 
 @Injectable()
 export class UrlService {
@@ -24,9 +25,9 @@ export class UrlService {
     const {originalUrl} = createUrlDto;
 
     return await this.prisma.transaction<UrlResponseDto>(async tx => {
-      const existingUrl = await this.urlRepository.existsByOriginalUrl(originalUrl, tx);
-      if (existingUrl) {
-        throw new ConflictException(`OriginalUrl '${originalUrl}' is already processed`);
+      const existingUrl = await this.urlRepository.findByOriginalUrl(originalUrl, tx);
+      if (existingUrl && !isEmpty(existingUrl)) {
+        return this.mapToResponseDto(existingUrl);
       }
 
       const slug = generateSlug();
