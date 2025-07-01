@@ -7,6 +7,7 @@ import {DatabaseModule} from '@/modules/database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [UrlController],
-  providers: [UrlService, UrlRepository]
+  providers: [UrlService, UrlRepository],
+  exports: [UrlService]
 })
 export class UrlModule {}

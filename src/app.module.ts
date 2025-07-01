@@ -4,6 +4,7 @@ import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {UrlModule} from './modules/url/url.module';
 import {DatabaseModule} from '@/modules/database/database.module';
+import {RedirectModule} from '@/modules/redirect/redirect.module';
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import {DatabaseModule} from '@/modules/database/database.module';
       envFilePath: ['.env.local', '.env'] //todo add .env.prod later
     }),
     DatabaseModule,
-    UrlModule
+    UrlModule,
+    RedirectModule
   ],
   controllers: [AppController],
   providers: [AppService]

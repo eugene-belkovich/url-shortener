@@ -32,7 +32,6 @@ const bootstrap = async (): Promise<void> => {
   });
 
   app.useGlobalPipes(new ValidationPipe({transform: true}));
-  app.setGlobalPrefix('api/v1/');
 
   process.on('SIGTERM', async () => {
     logger.log('SIGTERM received, shutting down gracefully');
