@@ -6,7 +6,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/compo
 
 export default function NotFoundPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex items-center justify-center">
       <Card className="w-full max-w-md text-center">
         <CardHeader>
           <div className="mb-4 text-6xl font-bold text-gray-300">404</div>
