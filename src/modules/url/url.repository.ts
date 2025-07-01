@@ -9,15 +9,12 @@ export class UrlRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(params: CreateUrlParams): Promise<any> {
-    const query = `
-      INSERT INTO "Url" (original_url, slug, updated_at)
-      VALUES ($1, $2, NOW())
-      RETURNING id, original_url, slug, created_at, updated_at
-    `;
-
     try {
-      const result: UrlRow[] = await this.prisma.$queryRawUnsafe(query, params.originalUrl, params.slug);
-
+      const result: UrlRow[] = await this.prisma.$queryRaw`
+        INSERT INTO "Url" (original_url, slug, updated_at)
+        VALUES ($1, $2, NOW())
+        RETURNING id, original_url, slug, created_at, updated_at
+      `;
       if (result.length === 0) {
         throw new Error('Failed to create URL');
       }
@@ -36,7 +33,12 @@ export class UrlRepository {
   `;
 
     try {
-      const result: SelectPlaceholder[] = await this.prisma.$queryRawUnsafe(query, originalUrl);
+      const result: SelectPlaceholder[] = await this.prisma.$queryRaw`
+        SELECT 1 
+        FROM "Url" 
+        WHERE original_url = ${originalUrl} 
+        LIMIT 1
+      `;
       return result.length > 0;
     } catch (error) {
       this.logger.error(`Failed to check original_url existence ${originalUrl}: ${error.message}`, error);
@@ -50,7 +52,13 @@ export class UrlRepository {
   `;
 
     try {
-      const result: SelectPlaceholder[] = await this.prisma.$queryRawUnsafe(query, slug);
+      const result: SelectPlaceholder[] = await this.prisma.$queryRaw`
+        SELECT 1 
+        FROM "Url" 
+        WHERE slug = ${slug} 
+        LIMIT 1
+      `;
+
       return result.length > 0;
     } catch (error) {
       this.logger.error(`Failed to check slug existence ${slug}: ${error.message}`, error);
@@ -59,18 +67,17 @@ export class UrlRepository {
   }
 
   async findAll(): Promise<UrlRow[]> {
-    const query = `
-      SELECT 
-        u.id,
-        u.original_url,
-        u.slug,
-        u.created_at,
-        u.updated_at
-      FROM "Url" as u
+    try {
+      const result: UrlRow[] = await this.prisma.$queryRaw`
+      SELECT
+       u.id, 
+       u.original_url, 
+       u.slug, 
+       u.created_at, 
+       u.updated_at 
+       FROM "Url" as u
     `;
 
-    try {
-      const result: UrlRow[] = await this.prisma.$queryRawUnsafe(query);
       return result;
     } catch (error: any) {
       this.logger.error(`Failed to find all URLs: ${error.message}`, error);
@@ -79,10 +86,8 @@ export class UrlRepository {
   }
 
   async count(): Promise<number> {
-    const query = `SELECT COUNT(*)::INTEGER as count FROM "Url"`;
-
     try {
-      const result: {count: number}[] = await this.prisma.$queryRawUnsafe(query);
+      const result: {count: number}[] = await this.prisma.$queryRaw`SELECT COUNT(*)::INTEGER as count FROM "Url"`;
       return result[0]?.count ?? 0;
     } catch (error: any) {
       this.logger.error(`Failed to count URLs: ${error.message}`, error);
