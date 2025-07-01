@@ -1,9 +1,10 @@
-import {ConflictException, Injectable, Logger} from '@nestjs/common';
+import {BadRequestException, ConflictException, Injectable, Logger} from '@nestjs/common';
 import {CreateUrlDto} from './dto/create-url.dto';
-import {generateSlug} from '@/common/utils/slug.util';
+import {generateSlug, isValidSlug} from '@/common/utils/slug.util';
 import {UrlRepository} from '@/modules/url/url.repository';
 import {ConfigService} from '@nestjs/config';
 import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
+import {UrlRow} from '@/modules/database/types';
 
 @Injectable()
 export class UrlService {
@@ -28,7 +29,7 @@ export class UrlService {
     const slug = generateSlug();
 
     try {
-      const urlRecord = await this.urlRepository.create({
+      const urlRecord: UrlRow = await this.urlRepository.create({
         originalUrl,
         slug
       });
@@ -43,6 +44,20 @@ export class UrlService {
     }
   }
 
+  async getUrlBySlug(slug: string): Promise<UrlResponseDto | null> {
+    if (!isValidSlug(slug)) {
+      throw new BadRequestException('Invalid slug format');
+    }
+
+    const urlRecord = await this.urlRepository.findBySlug(slug);
+
+    if (!urlRecord) {
+      return null;
+    }
+
+    return this.mapToResponseDto(urlRecord);
+  }
+
   async getAllUrls(): Promise<UrlListResponseDto> {
     const [urls, total] = await Promise.all([this.urlRepository.findAll(), this.urlRepository.count()]);
 
@@ -54,15 +69,13 @@ export class UrlService {
     };
   }
 
-  private mapToResponseDto(urlRecord: any): UrlResponseDto {
+  private mapToResponseDto(urlRecord: UrlRow): UrlResponseDto {
     return {
       slug: urlRecord.slug,
-      originalUrl: urlRecord.original_url || urlRecord.originalUrl,
+      originalUrl: urlRecord.original_url,
       shortUrl: `${this.appUrl}/${urlRecord.slug}`,
-      createdAt: urlRecord.created_at || urlRecord.createdAt,
-      updatedAt: urlRecord.updated_at || urlRecord.updatedAt,
-      visits: urlRecord.visit_count || urlRecord.visits,
-      lastVisited: urlRecord.last_visited || urlRecord.lastVisited
+      createdAt: urlRecord.created_at,
+      updatedAt: urlRecord.updated_at
     };
   }
 }

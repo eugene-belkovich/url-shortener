@@ -31,8 +31,7 @@ const bootstrap = async (): Promise<void> => {
     credentials: true
   });
 
-  app.useGlobalPipes(new ValidationPipe());
-
+  app.useGlobalPipes(new ValidationPipe({transform: true}));
   app.setGlobalPrefix('api/v1/');
 
   process.on('SIGTERM', async () => {

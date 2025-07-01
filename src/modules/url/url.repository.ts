@@ -8,7 +8,7 @@ export class UrlRepository {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(params: CreateUrlParams): Promise<any> {
+  async create(params: CreateUrlParams): Promise<UrlRow> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
         INSERT INTO "Url" (original_url, slug, updated_at)
@@ -23,6 +23,39 @@ export class UrlRepository {
       return result[0];
     } catch (error) {
       this.logger.error(`Failed to create URL: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async findAll(): Promise<UrlRow[]> {
+    try {
+      const result: UrlRow[] = await this.prisma.$queryRaw`
+      SELECT
+       u.id, 
+       u.original_url, 
+       u.slug, 
+       u.created_at, 
+       u.updated_at 
+       FROM "Url" as u
+    `;
+
+      return result;
+    } catch (error: any) {
+      this.logger.error(`Failed to find all URLs: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async findBySlug(slug: string): Promise<UrlRow | null> {
+    try {
+      const result: UrlRow[] = await this.prisma.$queryRaw`
+      SELECT id, original_url, slug, created_at, updated_at
+      FROM "Url"
+      WHERE slug = ${slug} 
+    `;
+      return result.length > 0 ? result[0] : null;
+    } catch (error) {
+      this.logger.error(`Failed to find URL by slug ${slug}: ${error.message}`, error);
       throw error;
     }
   }
@@ -62,25 +95,6 @@ export class UrlRepository {
       return result.length > 0;
     } catch (error) {
       this.logger.error(`Failed to check slug existence ${slug}: ${error.message}`, error);
-      throw error;
-    }
-  }
-
-  async findAll(): Promise<UrlRow[]> {
-    try {
-      const result: UrlRow[] = await this.prisma.$queryRaw`
-      SELECT
-       u.id, 
-       u.original_url, 
-       u.slug, 
-       u.created_at, 
-       u.updated_at 
-       FROM "Url" as u
-    `;
-
-      return result;
-    } catch (error: any) {
-      this.logger.error(`Failed to find all URLs: ${error.message}`, error);
       throw error;
     }
   }

@@ -39,4 +39,16 @@ const generateRandomSlug = (length = 7): string => {
   return result;
 };
 
-export {generateSlug};
+const isValidSlug = (slug: string): boolean => {
+  if (!slug || typeof slug !== 'string') {
+    return false;
+  }
+
+  if (slug.length === 0 || slug.length > 7) {
+    return false;
+  }
+
+  return slug.split('').every(char => BASE62_ALPHABET.includes(char));
+};
+
+export {generateSlug, isValidSlug};
