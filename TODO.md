@@ -24,7 +24,7 @@ Extra Credit:
 
 ## MY 
 - [x] initial nest.js project setup
-- [ ] generate unique slug
+- [x] generate unique slug
 - [ ] validate initial url that is url -> pattern validation
 - [ ] if url invalid -> error
 - [ ] create and save to db
