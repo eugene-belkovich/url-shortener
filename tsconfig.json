@@ -19,6 +19,11 @@
     "resolveJsonModule": true,
     "rootDir": "./",
     "inlineSources": true,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@/modules/*": ["src/modules/*"],
+      "@/common/*": ["src/common/*"],
+    }
   }
 }
