@@ -28,12 +28,27 @@ export class UserRepository {
     }
   }
 
+  async findByEmail(email: string): Promise<UserRow | null> {
+    try {
+      const result: UserRow[] = await this.prisma.$queryRaw`
+        SELECT id, email, password, username, is_active, created_at, updated_at
+        FROM users
+        WHERE email = ${email} AND is_active = true
+      `;
+
+      return result.length > 0 ? result[0] : null;
+    } catch (error: any) {
+      this.logger.error(`Failed to find user by email ${email}: ${error.message}`, error);
+      throw error;
+    }
+  }
+
   async findById(id: string): Promise<UserRow | null> {
     try {
       const result: UserRow[] = await this.prisma.$queryRaw`
         SELECT id, email, password, username, is_active, created_at, updated_at
         FROM users
-        WHERE id = ${id} AND is_active = true
+        WHERE id = ${id}::bigint AND is_active = true
       `;
 
       return result.length > 0 ? result[0] : null;

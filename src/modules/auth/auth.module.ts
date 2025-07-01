@@ -28,4 +28,4 @@ import {DatabaseModule} from '@/modules/database/database.module';
   providers: [AuthService, UserRepository, PasswordService, JwtStrategy],
   exports: [AuthService, JwtStrategy]
 })
-export class AuthModule {} 
+export class AuthModule {}

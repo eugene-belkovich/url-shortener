@@ -1,6 +1,7 @@
 import {Controller, Post, Get, Body, UseGuards, Logger} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {SignupDto} from './dto/signupDto';
+import {SigninDto} from './dto/signinDto';
 import {AuthResponseDto, UserResponseDto} from './dto/auth-response.dto';
 import {JwtAuthGuard} from './guards/jwt-auth.guard';
 import {CurrentUser} from './decorators/current-user.decorator';
@@ -15,6 +16,12 @@ export class AuthController {
   async signup(@Body() signupDto: SignupDto): Promise<AuthResponseDto> {
     this.logger.log(`Signup attempt for email: ${signupDto.email}`);
     return await this.authService.signup(signupDto);
+  }
+
+  @Post('signin')
+  async signin(@Body() signinDto: SigninDto): Promise<AuthResponseDto> {
+    this.logger.log(`Signin attempt for email: ${signinDto.email}`);
+    return await this.authService.signin(signinDto);
   }
 
   @Get('profile')

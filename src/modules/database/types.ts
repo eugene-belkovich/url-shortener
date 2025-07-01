@@ -2,6 +2,7 @@ export interface UrlRow {
   id: string;
   original_url: string;
   slug: string;
+  user_id?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -9,6 +10,7 @@ export interface UrlRow {
 export interface CreateUrlParams {
   originalUrl: string;
   slug: string;
+  userId?: string;
 }
 
 export interface TrackEventRow {

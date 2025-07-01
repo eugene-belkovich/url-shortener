@@ -3,6 +3,7 @@ import {JwtService} from '@nestjs/jwt';
 import {UserRepository} from './user.repository';
 import {PasswordService} from './password.service';
 import {SignupDto} from './dto/signupDto';
+import {SigninDto} from './dto/signinDto';
 import {AuthResponseDto, UserResponseDto, JwtPayload} from './dto/auth-response.dto';
 
 @Injectable()
@@ -42,14 +43,42 @@ export class AuthService {
         accessToken
       };
     } catch (error: any) {
-      this.logger.error(`Registration failed: ${error.message}`, error);
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Registration failed: ${message}`, error);
       throw new BadRequestException('Registration failed');
     }
   }
 
+  async signin(signinDto: SigninDto): Promise<AuthResponseDto> {
+    const {email, password} = signinDto;
+
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isPasswordValid = await this.passwordService.comparePassword(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    this.logger.log(`User logged in successfully: ${email}`);
+
+    const userResponse = this.mapToUserResponse(user);
+    const accessToken = this.generateAccessToken(user);
+
+    return {
+      user: userResponse,
+      accessToken
+    };
+  }
+
   async validateUser(payload: JwtPayload): Promise<UserResponseDto | null> {
+    const id = payload.sub;
+
     try {
-      const user = await this.userRepository.findById(payload.sub);
+      const parsedId = typeof id === 'string' ? BigInt(id) : id;
+      const user = await this.userRepository.findById(parsedId.toString());
       if (!user) {
         return null;
       }

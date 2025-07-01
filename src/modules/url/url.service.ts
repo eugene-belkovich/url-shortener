@@ -20,7 +20,7 @@ export class UrlService {
     this.appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
   }
 
-  async createShortUrl(createUrlDto: CreateUrlDto): Promise<UrlResponseDto> {
+  async createShortUrl(createUrlDto: CreateUrlDto, userId?: string): Promise<UrlResponseDto> {
     const {originalUrl} = createUrlDto;
 
     return await this.prisma.transaction<UrlResponseDto>(async tx => {
@@ -34,18 +34,19 @@ export class UrlService {
       const urlRecord: UrlRow = await this.urlRepository.createShortUrl(
         {
           originalUrl,
-          slug
+          slug,
+          userId
         },
         tx
       );
 
-      this.logger.log(`Created short URL: ${slug} -> ${originalUrl}`);
+      this.logger.log(`Created short URL: ${slug} -> ${originalUrl} for user: ${userId || 'anonymous'}`);
 
       return this.mapToResponseDto(urlRecord);
     });
   }
 
-  async updateSlug(oldSlug: string, newSlug: string): Promise<UrlResponseDto> {
+  async updateSlug(oldSlug: string, newSlug: string, userId?: string): Promise<UrlResponseDto> {
     return await this.prisma.transaction<UrlResponseDto>(async tx => {
       if (!isValidSlug(oldSlug)) {
         throw new BadRequestException('Invalid old slug format');

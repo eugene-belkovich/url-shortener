@@ -1,10 +1,13 @@
-import {Controller, Get, Post, Body, Logger, Param, Res, Req, HttpStatus, Put} from '@nestjs/common';
+import {Controller, Get, Post, Body, Logger, Param, Put, UseGuards} from '@nestjs/common';
 
 import {UrlService} from './url.service';
 import {CreateUrlDto} from './dto/create-url.dto';
 import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
 import {UpdateSlugParams} from '@/modules/url/dto/update-slug.param';
 import {UpdateSlugDto} from '@/modules/url/dto/update-slug.dto';
+import {JwtAuthGuard} from '@/modules/auth/guards/jwt-auth.guard';
+import {CurrentUser} from '@/modules/auth/decorators/current-user.decorator';
+import {UserResponseDto} from '@/modules/auth/dto/auth-response.dto';
 
 @Controller('api/v1/urls')
 export class UrlController {
@@ -13,15 +16,24 @@ export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
   @Post()
-  async createShortUrl(@Body() createUrlDto: CreateUrlDto): Promise<UrlResponseDto> {
-    this.logger.log(`Creating short URL for: ${createUrlDto.originalUrl}`);
-    return await this.urlService.createShortUrl(createUrlDto);
+  @UseGuards(JwtAuthGuard)
+  async createShortUrl(
+    @Body() createUrlDto: CreateUrlDto,
+    @CurrentUser() user: UserResponseDto
+  ): Promise<UrlResponseDto> {
+    this.logger.log(`Creating short URL for: ${createUrlDto.originalUrl} by user: ${user.email}`);
+    return await this.urlService.createShortUrl(createUrlDto, user.id);
   }
 
   @Put(':oldSlug')
-  async updateSlug(@Param() param: UpdateSlugParams, @Body() updateSlugDto: UpdateSlugDto): Promise<UrlResponseDto> {
+  @UseGuards(JwtAuthGuard)
+  async updateSlug(
+    @Param() param: UpdateSlugParams,
+    @Body() updateSlugDto: UpdateSlugDto,
+    @CurrentUser() user: UserResponseDto
+  ): Promise<UrlResponseDto> {
     this.logger.log(`Updating slug: ${param.oldSlug} -> ${updateSlugDto.newSlug}`);
-    return await this.urlService.updateSlug(param.oldSlug, updateSlugDto.newSlug);
+    return await this.urlService.updateSlug(param.oldSlug, updateSlugDto.newSlug, user.id);
   }
 
   @Get()

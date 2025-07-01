@@ -14,10 +14,10 @@ export class UrlRepository {
 
     try {
       const result: UrlRow[] = await prismaClient.$queryRaw`
-        INSERT INTO urls (original_url, slug, updated_at)
-        VALUES (${params.originalUrl}, ${params.slug}, NOW())
-        RETURNING id, original_url, slug, created_at, updated_at
-      `;
+         INSERT INTO urls (original_url, slug, user_id, updated_at)
+         VALUES (${params.originalUrl}, ${params.slug}, ${params.userId}, NOW())
+         RETURNING id, original_url, slug, user_id, created_at, updated_at
+       `;
       if (result.length === 0) {
         throw new Error('Failed to create URL');
       }
@@ -33,7 +33,7 @@ export class UrlRepository {
   async findAll(): Promise<UrlRow[]> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
-      SELECT id, original_url, slug, created_at, updated_at 
+      SELECT id, original_url, slug, user_id, created_at, updated_at 
       FROM urls
     `;
 
@@ -48,10 +48,10 @@ export class UrlRepository {
     const prismaClient = prisma ?? this.prisma;
     try {
       const result: UrlRow[] = await prismaClient.$queryRaw`
-      SELECT id, original_url, slug, created_at, updated_at
-      FROM urls
-      WHERE slug = ${slug} 
-    `;
+        SELECT id, original_url, slug, user_id, created_at, updated_at
+        FROM urls
+        WHERE slug = ${slug}
+      `;
       return result.length > 0 ? result[0] : null;
     } catch (error) {
       this.logger.error(`Failed to find URL by slug ${slug}: ${error.message}`, error);
@@ -64,11 +64,11 @@ export class UrlRepository {
 
     try {
       const result: UrlRow[] = await prismaClient.$queryRaw`
-        UPDATE urls
-        SET slug = ${newSlug}, updated_at = NOW()
-        WHERE slug = ${oldSlug}
-        RETURNING id, original_url, slug, created_at, updated_at
-    `;
+         UPDATE urls
+         SET slug = ${newSlug}, updated_at = NOW()
+         WHERE slug = ${oldSlug}
+         RETURNING id, original_url, slug, user_id, created_at, updated_at
+       `;
 
       if (result.length === 0) {
         return null;
