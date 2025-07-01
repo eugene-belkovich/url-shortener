@@ -8,11 +8,11 @@ export class UrlRepository {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(params: CreateUrlParams): Promise<UrlRow> {
+  async createShortUrl(params: CreateUrlParams): Promise<UrlRow> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
         INSERT INTO "Url" (original_url, slug, updated_at)
-        VALUES ($1, $2, NOW())
+        VALUES (${params.originalUrl}, ${params.slug}, NOW())
         RETURNING id, original_url, slug, created_at, updated_at
       `;
       if (result.length === 0) {
@@ -56,6 +56,27 @@ export class UrlRepository {
       return result.length > 0 ? result[0] : null;
     } catch (error) {
       this.logger.error(`Failed to find URL by slug ${slug}: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async updateSlug(oldSlug: string, newSlug: string): Promise<UrlRow | null> {
+    try {
+      const result: UrlRow[] = await this.prisma.$queryRaw`
+        UPDATE "Url" 
+        SET slug = ${newSlug}, updated_at = NOW()
+        WHERE slug = ${oldSlug}
+        RETURNING id, original_url, slug, created_at, updated_at
+    `;
+
+      if (result.length === 0) {
+        return null;
+      }
+
+      this.logger.log(`Updated slug ${oldSlug} -> ${newSlug}`);
+      return result[0];
+    } catch (error) {
+      this.logger.error(`Failed to update slug: ${error.message}`, error);
       throw error;
     }
   }

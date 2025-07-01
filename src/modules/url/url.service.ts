@@ -1,4 +1,4 @@
-import {BadRequestException, ConflictException, Injectable, Logger} from '@nestjs/common';
+import {BadRequestException, ConflictException, Injectable, Logger, NotFoundException} from '@nestjs/common';
 import {CreateUrlDto} from './dto/create-url.dto';
 import {generateSlug, isValidSlug} from '@/common/utils/slug.util';
 import {UrlRepository} from '@/modules/url/url.repository';
@@ -29,7 +29,7 @@ export class UrlService {
     const slug = generateSlug();
 
     try {
-      const urlRecord: UrlRow = await this.urlRepository.create({
+      const urlRecord: UrlRow = await this.urlRepository.createShortUrl({
         originalUrl,
         slug
       });
@@ -40,6 +40,45 @@ export class UrlService {
     } catch (error: any) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error(`Failed to create URL: ${message}`, error);
+      throw error;
+    }
+  }
+
+  async updateSlug(oldSlug: string, newSlug: string): Promise<UrlResponseDto> {
+    if (!isValidSlug(oldSlug)) {
+      throw new BadRequestException('Invalid old slug format');
+    }
+
+    if (!isValidSlug(newSlug)) {
+      throw new BadRequestException('Invalid new slug format');
+    }
+
+    if (oldSlug === newSlug) {
+      throw new BadRequestException('New slug must be different from the current slug');
+    }
+
+    const existingUrl = await this.urlRepository.findBySlug(oldSlug);
+    if (!existingUrl) {
+      throw new NotFoundException(`URL with slug '${oldSlug}' not found`);
+    }
+
+    const slugTaken = await this.urlRepository.existsBySlug(newSlug);
+    if (slugTaken) {
+      throw new ConflictException(`Slug '${newSlug}' is already taken`);
+    }
+
+    try {
+      const updatedUrl = await this.urlRepository.updateSlug(oldSlug, newSlug);
+
+      if (!updatedUrl) {
+        throw new NotFoundException(`URL with slug '${oldSlug}' not found`);
+      }
+
+      this.logger.log(`Updated slug: ${oldSlug} -> ${newSlug}`);
+
+      return this.mapToResponseDto(updatedUrl);
+    } catch (error) {
+      this.logger.error(`Failed to update slug: ${error.message}`, error);
       throw error;
     }
   }

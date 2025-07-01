@@ -1,11 +1,13 @@
-import {Controller, Get, Post, Body, Logger, Param, Res, Req, HttpStatus} from '@nestjs/common';
+import {Controller, Get, Post, Body, Logger, Param, Res, Req, HttpStatus, Put} from '@nestjs/common';
 import {FastifyReply} from 'fastify';
 import {isEmpty} from 'lodash';
 
 import {UrlService} from './url.service';
 import {CreateUrlDto} from './dto/create-url.dto';
 import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
-import {GetUrlBySlugParams} from '@/modules/url/dto/get-url-by-slug.dto';
+import {UpdateSlugParams} from '@/modules/url/dto/update-slug.param';
+import {UpdateSlugDto} from '@/modules/url/dto/update-slug.dto';
+import {GetUrlBySlugParams} from '@/modules/url/dto/get-url-by-slug.param';
 
 @Controller('urls')
 export class UrlController {
@@ -42,6 +44,12 @@ export class UrlController {
     });
 
     res.redirect(urlRecord.originalUrl, HttpStatus.FOUND);
+  }
+
+  @Put(':oldSlug')
+  async updateSlug(@Param() param: UpdateSlugParams, @Body() updateSlugDto: UpdateSlugDto): Promise<UrlResponseDto> {
+    this.logger.log(`Updating slug: ${param.oldSlug} -> ${updateSlugDto.newSlug}`);
+    return await this.urlService.updateSlug(param.oldSlug, updateSlugDto.newSlug);
   }
 
   @Get()
