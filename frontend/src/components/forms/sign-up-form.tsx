@@ -88,7 +88,6 @@ export const SignUpForm = ({onSuccess}: SignUpFormProps) => {
             </div>
             {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
 
-            {/* Password Requirements */}
             {password && (
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-sm">
@@ -118,7 +117,6 @@ export const SignUpForm = ({onSuccess}: SignUpFormProps) => {
             </div>
             {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>}
 
-            {/* Password Match Indicator */}
             {confirmPassword && (
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle className={`h-3 w-3 ${passwordRequirements.match ? 'text-green-500' : 'text-red-500'}`} />
