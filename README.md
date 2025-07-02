@@ -31,6 +31,11 @@ cp .env.example .env
 docker-compose up -d
 ```
 
-### 7. Use `./backend/postman` to test the API
+### 7. Give permissions to run the backend script
+```bash
+chmod +x ./backend/scripts/run_app_dev.sh
+```
+
+### 8. Use `./backend/postman` to test the API
 
 - if you want to run backend locally use "http://127.0.0.1:3000" as {{baseUrl}} for postman 
