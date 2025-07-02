@@ -26,9 +26,9 @@ export class UrlService {
     const {originalUrl} = createUrlDto;
 
     return await this.prisma.transaction<UrlResponseDto>(async tx => {
-      const existingUrl = await this.urlRepository.findByOriginalUrl(originalUrl, tx);
-      if (existingUrl && !isEmpty(existingUrl)) {
-        return this.mapToResponseDto(existingUrl);
+      const existingUrl = await this.urlRepository.existsByOriginalUrl(originalUrl, tx);
+      if (existingUrl) {
+        throw new ConflictException(`This Url '${originalUrl.slice(0, 16) + '...'}' is already shortened`);
       }
 
       const slug = generateSlug();

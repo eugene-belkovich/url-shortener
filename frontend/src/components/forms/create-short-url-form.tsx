@@ -53,6 +53,7 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
     mutationFn: UrlService.createUrl,
     onSuccess: data => {
       toast.success('Short URL created successfully')
+      setSubmitError(null)
       setSubmitResponse(data.shortUrl)
       reset()
       onSuccess?.(data)
@@ -60,6 +61,7 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
     onError: (error: AxiosError) => {
       // @ts-expect-error - backend error response structure
       const errorMessage = error?.response?.data?.message || error.message || 'Failed to create URL'
+      setSubmitResponse(null)
       setSubmitError(errorMessage)
       toast.error(errorMessage)
     },
