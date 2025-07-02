@@ -56,6 +56,11 @@ export const UrlsList = () => {
 
   const totalUrls = urlsData?.total ?? 0
   const hasUrls = filteredUrls.length > 0
+  filteredUrls.sort((a, b): number => {
+    if (b.clicks !== a.clicks) return b.clicks - a.clicks
+    // @ts-ignore
+    return new Date(b.updatedAt) - new Date(a.updatedAt)
+  })
 
   return (
     <div className="space-y-6">
