@@ -18,8 +18,9 @@ RUN npx prisma generate
 #
 #CMD ["/bin/sh", "-c", "/app/scripts/run_app_dev.sh"]
 
-EXPOSE ${PORT}
+COPY ./scripts/run_app_dev.sh /app/scripts/run_app_dev.sh
+RUN chmod +x /app/scripts/run_app_dev.sh
 
-ENV PORT 3000
+ENV PORT=3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["/bin/sh", "-c", "/app/scripts/run_app_dev.sh"]

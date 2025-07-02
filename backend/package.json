@@ -14,12 +14,12 @@
     "start:prod": "dotenv -e .env -- && node dist/main",
     "db:studio": "npx prisma studio",
     "db:studio:local": "dotenv -e .env.local -- npx prisma studio",
-    "db:apply": "prisma db push",
-    "db:seed": "prisma db seed",
-    "db:migrate:local": "dotenv -e .env.local -- prisma migrate dev",
-    "db:generate:local": "dotenv -e .env.local -- prisma generate",
-    "db:migrate:status": "prisma migrate status",
+    "db:apply": "dotenv -e .env -- prisma db push",
+    "db:seed": "dotenv -e .env -- prisma db seed",
+    "db:migrate": "dotenv -e .env -- prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:status": "prisma migrate status",
+    "db:generate": "dotenv -e .env -- prisma generate",
     "lint": "eslint ./ --fix --ignore-pattern 'dist/**' --ignore-pattern 'node_modules/**'",
     "prettier": "prettier . --write --ignore-path .prettierignore",
     "format": "npm run lint && npm run prettier",
@@ -101,5 +101,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
