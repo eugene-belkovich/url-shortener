@@ -13,8 +13,8 @@ export class UrlService {
     return response.data
   }
 
-  static async updateSlug(id: string, newSlug: string): Promise<CreateUrlResponse> {
-    const response = await apiClient.put<CreateUrlResponse>(`${API_ENDPOINTS.URLS.LIST}/${id}`, {newSlug})
+  static async updateSlug(slug: string, newSlug: string): Promise<CreateUrlResponse> {
+    const response = await apiClient.put<CreateUrlResponse>(`${API_ENDPOINTS.URLS.LIST}/${slug}`, {newSlug})
     return response.data
   }
 }

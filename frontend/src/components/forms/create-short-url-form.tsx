@@ -14,6 +14,7 @@ import {Url} from '@/types/api'
 import {AxiosError} from 'axios'
 import {Copy} from 'lucide-react'
 import {useRouter} from 'next/navigation'
+import {isValidUrl} from '@/utils'
 
 interface CreateUrlFormProps {
   onSuccess?: (url: Url) => void
@@ -24,15 +25,6 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitResponse, setSubmitResponse] = useState<string | null>(null)
   const router = useRouter()
-
-  const isValidUrl = (url: string): boolean => {
-    try {
-      const urlObj = new URL(url)
-      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
-    } catch {
-      return false
-    }
-  }
 
   const handleRedirect = () => {
     if (submitResponse && isValidUrl(submitResponse)) {
@@ -110,7 +102,7 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
   }
 
   return (
-    <Card className="mx-auto w-full max-w-md">
+    <Card className="mx-auto mb-8 w-full max-w-md ">
       <CardHeader>
         <CardTitle>URL shortener</CardTitle>
         <CardDescription>Enter URL to shorten</CardDescription>

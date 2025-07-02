@@ -24,6 +24,18 @@ export const UrlsList = () => {
     queryFn: UrlService.getUrls,
   })
 
+  const updateSlugMutation = useMutation({
+    mutationFn: ({slug, newSlug}: {slug: string; newSlug: string}) => UrlService.updateSlug(slug, newSlug),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['urls']})
+      toast.success('URL updated successfully!')
+    },
+    onError: error => {
+      console.error('Failed to update URL:', error)
+      toast.error('Failed to update URL. Please try again.')
+    },
+  })
+
   const filteredUrls =
     urlsData?.urls?.filter(
       url =>
@@ -32,9 +44,8 @@ export const UrlsList = () => {
         url.shortUrl.toLowerCase().includes(searchTerm.toLowerCase())
     ) ?? []
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleEdit = (url: Url) => {
-    toast.info('Edit functionality coming soon!')
+  const handleEdit = (slug: string, newSlug: string) => {
+    updateSlugMutation.mutate({slug, newSlug})
   }
 
   const handleRefresh = () => {
