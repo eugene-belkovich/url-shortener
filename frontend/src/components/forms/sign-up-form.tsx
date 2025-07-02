@@ -7,10 +7,11 @@ import {signUpSchema, SignUpFormData} from '@/lib/schemas'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
-import {toast} from 'sonner'
 import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 import {Eye, EyeOff, CheckCircle} from 'lucide-react'
+import {useAuth} from '@/contexts/auth.context'
+import {ROUTES} from '@/lib/constants'
 
 interface SignUpFormProps {
   onSuccess?: () => void
@@ -18,10 +19,10 @@ interface SignUpFormProps {
 
 export const SignUpForm = ({onSuccess}: SignUpFormProps) => {
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const router = useRouter()
+  const {signUp, isLoading} = useAuth()
 
   const {
     register,
@@ -47,24 +48,15 @@ export const SignUpForm = ({onSuccess}: SignUpFormProps) => {
 
   const onSubmit = async (data: SignUpFormData) => {
     setSubmitError(null)
-    setIsLoading(true)
 
     try {
-      // TODO: Implement actual sign up API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      console.log('Sign up data:', data)
-      toast.success('Account created successfully!')
-
+      await signUp({email: data.email, password: data.password})
       onSuccess?.()
-      router.push('/dashboard')
+      router.push(ROUTES.DASHBOARD)
     } catch (error) {
       // @ts-expect-error - backend error response structure
       const errorMessage = error?.response?.data?.message || error.message || 'Failed to create account'
       setSubmitError(errorMessage)
-      toast.error(errorMessage)
-    } finally {
-      setIsLoading(false)
     }
   }
 

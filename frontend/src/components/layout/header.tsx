@@ -2,8 +2,16 @@
 
 import Link from 'next/link'
 import {Button} from '@/components/ui/button'
+import {useAuth} from '@/contexts/auth.context'
+import {ROUTES} from '@/lib/constants'
 
 export const Header = () => {
+  const {isAuthenticated, user, logout} = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
   return (
     <header className="border-b bg-white shadow-sm">
       <div className="container mx-auto px-4">
@@ -13,12 +21,33 @@ export const Header = () => {
           </Link>
 
           <div className="flex items-center space-x-3">
+            {isAuthenticated && (
+              <>
+                <span className="text-sm text-gray-600">Welcome, {user?.email}</span>
+              </>
+            )}
             <Button variant="outline" asChild>
-              <Link href="/signin">Sign In</Link>
+              <Link href={ROUTES.HOME}>Home</Link>
             </Button>
-            <Button asChild>
-              <Link href="/signup">Sign Up</Link>
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button variant="outline" asChild>
+                  <Link href={ROUTES.DASHBOARD}>Dashboard</Link>
+                </Button>
+                <Button variant="outline" onClick={handleLogout}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" asChild>
+                  <Link href={ROUTES.SIGNIN}>Sign In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href={ROUTES.SIGNUP}>Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

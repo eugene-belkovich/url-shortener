@@ -1,9 +1,12 @@
-import { SignUpForm } from '@/components/forms'
+import {SignUpForm} from '@/components/forms'
+import {GuestRoute} from '@/components/auth/guest-route'
 
 export default function SignUpPage() {
   return (
-    <div className="flex items-center justify-center">
-      <SignUpForm />
-    </div>
+    <GuestRoute>
+      <div className="flex items-center justify-center">
+        <SignUpForm />
+      </div>
+    </GuestRoute>
   )
 }

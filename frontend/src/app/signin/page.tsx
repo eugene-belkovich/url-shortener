@@ -1,9 +1,12 @@
-import { SignInForm } from '@/components/forms'
+import {SignInForm} from '@/components/forms'
+import {GuestRoute} from '@/components/auth/guest-route'
 
 export default function SignInPage() {
   return (
-    <div className="flex items-center justify-center">
-      <SignInForm />
-    </div>
+    <GuestRoute>
+      <div className="flex items-center justify-center">
+        <SignInForm />
+      </div>
+    </GuestRoute>
   )
 }
