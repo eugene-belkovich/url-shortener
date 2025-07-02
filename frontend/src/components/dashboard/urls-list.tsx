@@ -30,8 +30,10 @@ export const UrlsList = () => {
       toast.success('URL updated successfully!')
     },
     onError: error => {
+      // @ts-ignore
+      const errorMessage = error?.response?.data?.message || error.message || 'Failed to update URL'
+      toast.error(errorMessage)
       console.error('Failed to update URL:', error)
-      toast.error('Failed to update URL. Please try again.')
     },
   })
 
