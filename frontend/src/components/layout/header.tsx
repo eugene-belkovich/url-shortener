@@ -4,12 +4,16 @@ import Link from 'next/link'
 import {Button} from '@/components/ui/button'
 import {useAuth} from '@/contexts/auth.context'
 import {ROUTES} from '@/lib/constants'
+import {useRouter} from 'next/navigation'
 
 export const Header = () => {
   const {isAuthenticated, user, logout} = useAuth()
+  const router = useRouter()
 
   const handleLogout = async () => {
     await logout()
+
+    router.push(ROUTES.HOME)
   }
 
   return (
