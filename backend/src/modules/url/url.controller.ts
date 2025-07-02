@@ -6,6 +6,7 @@ import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response
 import {UpdateSlugParams} from '@/modules/url/dto/update-slug.param';
 import {UpdateSlugDto} from '@/modules/url/dto/update-slug.dto';
 import {JwtAuthGuard} from '@/modules/auth/guards/jwt-auth.guard';
+import {OptionalJwtAuthGuard} from '@/modules/auth/guards/optional-jwt-auth.guard';
 import {CurrentUser} from '@/modules/auth/decorators/current-user.decorator';
 import {UserResponseDto} from '@/modules/auth/dto/auth-response.dto';
 import {GUEST_USER_ID} from '@/common/utils/user.util';
@@ -17,7 +18,7 @@ export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   async createShortUrl(
     @Body() createUrlDto: CreateUrlDto,
     @CurrentUser() user?: UserResponseDto
