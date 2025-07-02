@@ -26,10 +26,7 @@ export class UrlController {
 
   @Put(':oldSlug')
   @UseGuards(JwtAuthGuard)
-  async updateSlug(
-    @Param() param: UpdateSlugParams,
-    @Body() updateSlugDto: UpdateSlugDto,
-  ): Promise<UrlResponseDto> {
+  async updateSlug(@Param() param: UpdateSlugParams, @Body() updateSlugDto: UpdateSlugDto): Promise<UrlResponseDto> {
     this.logger.log(`Updating slug: ${param.oldSlug} -> ${updateSlugDto.newSlug}`);
     return await this.urlService.updateSlug(param.oldSlug, updateSlugDto.newSlug);
   }
