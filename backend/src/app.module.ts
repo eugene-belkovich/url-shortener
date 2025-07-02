@@ -1,12 +1,11 @@
 import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
-import {AppController} from './app.controller';
-import {AppService} from './app.service';
 import {UrlModule} from './modules/url/url.module';
 import {DatabaseModule} from '@/modules/database/database.module';
 import {RedirectModule} from '@/modules/redirect/redirect.module';
 import {AnalyticsModule} from '@/modules/analytics/analytics.module';
 import {AuthModule} from '@/modules/auth/auth.module';
+import {ThrottlerModule} from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -19,8 +18,6 @@ import {AuthModule} from '@/modules/auth/auth.module';
     RedirectModule,
     AnalyticsModule,
     AuthModule
-  ],
-  controllers: [AppController],
-  providers: [AppService]
+  ]
 })
 export class AppModule {}
