@@ -53,3 +53,8 @@ work:
 
 
 
+## FOR FUTURE:
+- [ ] paginantion for apis
+- [ ] unit tests for shorter hash function
+- [ ] add redis layer later to cut laoding on db
+- [ ] create db cluster: primary node for writes only, 3 replicas for read only
