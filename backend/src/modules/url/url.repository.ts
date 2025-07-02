@@ -110,10 +110,6 @@ export class UrlRepository {
   async existsByOriginalUrl(originalUrl: string, prisma?: Prisma.TransactionClient): Promise<boolean> {
     const prismaClient = prisma ?? this.prisma;
 
-    const query = `
-    SELECT 1 FROM urls WHERE original_url = $1 LIMIT 1
-  `;
-
     try {
       const result: SelectPlaceholder[] = await prismaClient.$queryRaw`
         SELECT 1 
@@ -130,10 +126,6 @@ export class UrlRepository {
 
   async existsBySlug(slug: string, prisma?: Prisma.TransactionClient): Promise<boolean> {
     const prismaClient = prisma ?? this.prisma;
-
-    const query = `
-    SELECT 1 FROM urls WHERE slug = $1 LIMIT 1
-  `;
 
     try {
       const result: SelectPlaceholder[] = await prismaClient.$queryRaw`

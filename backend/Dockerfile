@@ -13,10 +13,7 @@ COPY . .
 
 RUN npx prisma generate
 
-#COPY ./scripts/run_app_dev.sh /app/scripts/run_app_dev.sh
-#RUN chmod +x /app/scripts/run_app_dev.sh
-#
-#CMD ["/bin/sh", "-c", "/app/scripts/run_app_dev.sh"]
+EXPOSE 3000
 
 COPY ./scripts/run_app_dev.sh /app/scripts/run_app_dev.sh
 RUN chmod +x /app/scripts/run_app_dev.sh

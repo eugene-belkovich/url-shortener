@@ -23,11 +23,6 @@ const bootstrap = async (): Promise<void> => {
   app.use(helmet());
   app.use(compression());
 
-  async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
-    await app.listen(process.env.PORT ?? 3000);
-  }
-  bootstrap();
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin || corsOrigins.includes(origin)) {
