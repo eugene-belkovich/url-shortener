@@ -15,4 +15,4 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       </main>
     </div>
   )
-}
+} 
