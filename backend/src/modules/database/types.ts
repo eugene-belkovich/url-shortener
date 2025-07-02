@@ -5,6 +5,7 @@ export interface UrlRow {
   user_id?: string;
   created_at: Date;
   updated_at: Date;
+  clicks?: number;
 }
 
 export interface CreateUrlParams {

@@ -1,7 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {CreateUrlParams, SelectPlaceholder, UrlRow} from '@/modules/database/types';
 import {PrismaService} from '@/modules/database/prisma.service';
-import {Prisma, PrismaClient} from '@prisma/client';
+import {Prisma} from '@prisma/client';
 
 @Injectable()
 export class UrlRepository {
@@ -33,13 +33,23 @@ export class UrlRepository {
   async findAll(): Promise<UrlRow[]> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
-      SELECT id, original_url, slug, user_id, created_at, updated_at 
-      FROM urls
-    `;
+        SELECT 
+          u.id, 
+          u.original_url, 
+          u.slug, 
+          u.user_id, 
+          u.created_at, 
+          u.updated_at,
+          COALESCE(COUNT(a.id), 0)::INTEGER as clicks
+        FROM urls u
+        LEFT JOIN analytics a ON u.id = a.url_id
+        GROUP BY u.id
+        ORDER BY clicks DESC
+      `;
 
       return result;
-    } catch (error: any) {
-      this.logger.error(`Failed to find all URLs: ${error.message}`, error);
+    } catch (error) {
+      this.logger.error(`Failed to find all URLs: ${error instanceof Error ? error.message : 'Unknown error'}`, error);
       throw error;
     }
   }

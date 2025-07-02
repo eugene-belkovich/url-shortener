@@ -33,7 +33,7 @@ export class UrlController {
     @CurrentUser() user: UserResponseDto
   ): Promise<UrlResponseDto> {
     this.logger.log(`Updating slug: ${param.oldSlug} -> ${updateSlugDto.newSlug}`);
-    return await this.urlService.updateSlug(param.oldSlug, updateSlugDto.newSlug, user.id);
+    return await this.urlService.updateSlug(param.oldSlug, updateSlugDto.newSlug);
   }
 
   @Get()

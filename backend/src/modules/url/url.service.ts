@@ -47,7 +47,7 @@ export class UrlService {
     });
   }
 
-  async updateSlug(oldSlug: string, newSlug: string, userId?: string): Promise<UrlResponseDto> {
+  async updateSlug(oldSlug: string, newSlug: string): Promise<UrlResponseDto> {
     return await this.prisma.transaction<UrlResponseDto>(async tx => {
       if (!isValidSlug(oldSlug)) {
         throw new BadRequestException('Invalid old slug format');
@@ -115,7 +115,8 @@ export class UrlService {
       originalUrl: urlRecord.original_url,
       shortUrl: `${this.appUrl}/${urlRecord.slug}`,
       createdAt: urlRecord.created_at,
-      updatedAt: urlRecord.updated_at
+      updatedAt: urlRecord.updated_at,
+      visits: urlRecord.clicks || 0
     };
   }
 }
