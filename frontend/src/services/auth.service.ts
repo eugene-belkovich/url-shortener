@@ -1,45 +1,28 @@
-import {STORAGE_KEYS} from '@/lib/constants'
+import {API_ENDPOINTS, STORAGE_KEYS} from '@/lib/constants'
 import {AuthResponse, SignInRequest, SignUpRequest, User} from '@/types/api'
+import {apiClient} from '@/lib/api'
 
 export class AuthService {
-  static async signIn(data: SignInRequest): Promise<AuthResponse> {
-    const mockResponse: AuthResponse = {
-      user: {
-        id: '1',
-        email: data.email,
-        username: data.email,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      accessToken: 'mock_access_token_' + Date.now(),
-    }
+  static async signUp(data: SignUpRequest): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH.SIGNUP, data)
+    this.storeToken(response.data.accessToken)
+    this.storeUser(response.data.user)
 
-    this.storeToken(mockResponse.accessToken)
-    this.storeUser(mockResponse.user)
-
-    return mockResponse
+    return response.data
   }
 
-  static async signUp(data: SignUpRequest): Promise<AuthResponse> {
-    const mockResponse: AuthResponse = {
-      user: {
-        id: '1',
-        email: data.email,
-        username: data.email,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      accessToken: 'mock_access_token_' + Date.now(),
-    }
+  static async signIn(data: SignInRequest): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.AUTH.SIGNIN, data)
 
-    this.storeToken(mockResponse.accessToken)
-    this.storeUser(mockResponse.user)
+    this.storeToken(response.data.accessToken)
+    this.storeUser(response.data.user)
 
-    return mockResponse
+    return response.data
   }
 
   static async logout(): Promise<void> {
     this.clearAuth()
+    await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT)
   }
 
   static async getProfile(): Promise<User> {

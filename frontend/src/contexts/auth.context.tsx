@@ -87,6 +87,9 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
 
       toast.success('Successfully signed in!')
     } catch (error) {
+      // @ts-expect-error - backend error response structure
+      const errorMessage = error?.response?.data?.message || error.message || 'Failed to sign in'
+      toast.error(errorMessage)
       setAuthState(prev => ({...prev, isLoading: false}))
       throw error
     }
@@ -106,6 +109,9 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
 
       toast.success('Successfully signed up!')
     } catch (error) {
+      // @ts-expect-error - backend error response structure
+      const errorMessage = error?.response?.data?.message || error.message || 'Failed to sign up'
+      toast.error(errorMessage)
       setAuthState(prev => ({...prev, isLoading: false}))
       throw error
     }

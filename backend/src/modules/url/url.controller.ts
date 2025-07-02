@@ -9,7 +9,7 @@ import {JwtAuthGuard} from '@/modules/auth/guards/jwt-auth.guard';
 import {CurrentUser} from '@/modules/auth/decorators/current-user.decorator';
 import {UserResponseDto} from '@/modules/auth/dto/auth-response.dto';
 
-@Controller('api/v1/urls')
+@Controller('urls')
 export class UrlController {
   private readonly logger = new Logger(UrlController.name);
 
