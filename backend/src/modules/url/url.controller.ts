@@ -16,7 +16,6 @@ export class UrlController {
   constructor(private readonly urlService: UrlService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   async createShortUrl(
     @Body() createUrlDto: CreateUrlDto,
     @CurrentUser() user: UserResponseDto
