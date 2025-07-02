@@ -22,7 +22,6 @@ export class AuthService {
 
   static async logout(): Promise<void> {
     this.clearAuth()
-    await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT)
   }
 
   static async getProfile(): Promise<User> {

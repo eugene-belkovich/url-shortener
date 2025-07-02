@@ -31,11 +31,4 @@ export class AuthController {
     this.logger.log(`Profile request for user: ${user.email}`);
     return user;
   }
-
-  @Post('logout')
-  @UseGuards(JwtAuthGuard)
-  async logout(@CurrentUser() user: UserResponseDto, @Res() res: FastifyReply) {
-    this.logger.log(`User logged out: ${user.id}`);
-    return res.status(HttpStatus.OK).send({message: 'Logged out'});
-  }
 }
