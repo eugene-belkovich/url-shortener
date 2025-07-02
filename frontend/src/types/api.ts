@@ -3,7 +3,7 @@ export interface Url {
   originalUrl: string
   slug: string
   shortUrl: string
-  clickCount: number
+  clicks: number
   userId: string
   createdAt: string
   updatedAt: string

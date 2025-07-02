@@ -9,7 +9,7 @@ export const urlSchema = z.object({
   originalUrl: z.string().url(),
   slug: z.string(),
   shortUrl: z.string().url(),
-  clickCount: z.number().int().min(0),
+  clicks: z.number().int().min(0),
   userId: z.string(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

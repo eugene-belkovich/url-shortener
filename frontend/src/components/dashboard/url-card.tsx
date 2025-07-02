@@ -114,7 +114,7 @@ export const UrlCard = ({url, onEdit}: UrlCardProps) => {
 
             <div className="flex items-center gap-4 text-xs text-gray-500">
               <span className="flex items-center gap-1">
-                <span className="font-medium">{url.clickCount || 0}</span>
+                <span className="font-medium">{url.clicks || 0}</span>
                 <span>clicks</span>
               </span>
               <span>Created {format(new Date(url.createdAt), 'MMM d, yyyy')}</span>

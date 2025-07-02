@@ -4,7 +4,6 @@ import {useState} from 'react'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {UrlService} from '@/services/url.service'
 import {UrlCard} from './url-card'
-import {Url} from '@/types/api'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Search, RefreshCw} from 'lucide-react'
@@ -14,12 +13,7 @@ export const UrlsList = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const queryClient = useQueryClient()
 
-  const {
-    data: urlsData,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
+  const {data: urlsData, refetch} = useQuery({
     queryKey: ['urls'],
     queryFn: UrlService.getUrls,
   })
@@ -51,53 +45,6 @@ export const UrlsList = () => {
   const handleRefresh = () => {
     refetch()
     toast.success('URLs refreshed!')
-  }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Your URLs</h2>
-          <Button variant="outline" disabled>
-            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-            Loading...
-          </Button>
-        </div>
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="rounded-lg border bg-white p-6">
-                <div className="space-y-3">
-                  <div className="h-4 w-3/4 rounded bg-gray-200"></div>
-                  <div className="h-3 w-1/2 rounded bg-gray-200"></div>
-                  <div className="h-3 w-1/4 rounded bg-gray-200"></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Your URLs</h2>
-          <Button variant="outline" onClick={handleRefresh}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Retry
-          </Button>
-        </div>
-        <div className="py-8 text-center">
-          <p className="mb-4 text-red-600">Failed to load URLs</p>
-          <Button variant="outline" onClick={handleRefresh}>
-            Try Again
-          </Button>
-        </div>
-      </div>
-    )
   }
 
   const totalUrls = urlsData?.total ?? 0
