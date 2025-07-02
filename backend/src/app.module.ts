@@ -5,7 +5,6 @@ import {DatabaseModule} from '@/modules/database/database.module';
 import {RedirectModule} from '@/modules/redirect/redirect.module';
 import {AnalyticsModule} from '@/modules/analytics/analytics.module';
 import {AuthModule} from '@/modules/auth/auth.module';
-import {ThrottlerModule} from '@nestjs/throttler';
 
 @Module({
   imports: [
