@@ -13,6 +13,12 @@ export class UrlService {
     return response.data
   }
 
+  static async getUserUrls(userId?: string): Promise<UrlListResponse> {
+    const params = userId ? {userId} : {}
+    const response = await apiClient.get<UrlListResponse>(API_ENDPOINTS.URLS.USER, {params})
+    return response.data
+  }
+
   static async updateSlug(slug: string, newSlug: string): Promise<CreateUrlResponse> {
     const response = await apiClient.put<CreateUrlResponse>(`${API_ENDPOINTS.URLS.LIST}/${slug}`, {newSlug})
     return response.data

@@ -1,6 +1,7 @@
 import {BadRequestException, ConflictException, Injectable, Logger, NotFoundException} from '@nestjs/common';
 import {CreateUrlDto} from './dto/create-url.dto';
 import {generateSlug, isValidSlug} from '@/common/utils/slug.util';
+import {GUEST_USER_ID} from '@/common/utils/user.util';
 import {UrlRepository} from '@/modules/url/url.repository';
 import {ConfigService} from '@nestjs/config';
 import {UrlListResponseDto, UrlResponseDto} from '@/modules/url/dto/url-response.dto';
@@ -36,12 +37,12 @@ export class UrlService {
         {
           originalUrl,
           slug,
-          userId
+          userId: userId || null
         },
         tx
       );
 
-      this.logger.log(`Created short URL: ${slug} -> ${originalUrl} for user: ${userId || 'anonymous'}`);
+      this.logger.log(`Created short URL: ${slug} -> ${originalUrl} for user: ${userId || 'guest'}`);
 
       return this.mapToResponseDto(urlRecord);
     });
@@ -99,6 +100,21 @@ export class UrlService {
 
   async getAllUrls(): Promise<UrlListResponseDto> {
     const [urls, total] = await Promise.all([this.urlRepository.findAll(), this.urlRepository.count()]);
+
+    const urlDtos = urls.map(url => this.mapToResponseDto(url));
+
+    return {
+      urls: urlDtos,
+      total
+    };
+  }
+
+  async getUserUrls(userId: string): Promise<UrlListResponseDto> {
+    const isGuest = userId === GUEST_USER_ID;
+    const [urls, total] = await Promise.all([
+      isGuest ? this.urlRepository.findUrlsByUserId(null) : this.urlRepository.findUrlsByUserId(userId),
+      isGuest ? this.urlRepository.countByUserId(null) : this.urlRepository.countByUserId(userId)
+    ]);
 
     const urlDtos = urls.map(url => this.mapToResponseDto(url));
 

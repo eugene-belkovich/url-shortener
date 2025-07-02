@@ -153,4 +153,67 @@ export class UrlRepository {
       throw error;
     }
   }
+
+  async findUrlsByUserId(userId: string | null): Promise<UrlRow[]> {
+    try {
+      const result: UrlRow[] =
+        userId === null
+          ? await this.prisma.$queryRaw`
+            SELECT 
+              u.id, 
+              u.original_url, 
+              u.slug, 
+              u.user_id, 
+              u.created_at, 
+              u.updated_at,
+              COALESCE(COUNT(a.id), 0)::INTEGER as clicks
+            FROM urls u
+            LEFT JOIN analytics a ON u.id = a.url_id
+            WHERE u.user_id IS NULL
+            GROUP BY u.id
+            ORDER BY u.created_at DESC
+          `
+          : await this.prisma.$queryRaw`
+            SELECT 
+              u.id, 
+              u.original_url, 
+              u.slug, 
+              u.user_id, 
+              u.created_at, 
+              u.updated_at,
+              COALESCE(COUNT(a.id), 0)::INTEGER as clicks
+            FROM urls u
+            LEFT JOIN analytics a ON u.id = a.url_id
+            WHERE u.user_id = ${userId}::bigint
+            GROUP BY u.id
+            ORDER BY u.created_at DESC
+          `;
+
+      return result;
+    } catch (error) {
+      this.logger.error(`Failed to find URLs by user ID ${userId}: ${error?.message}`, error);
+      throw error;
+    }
+  }
+
+  async countByUserId(userId: string | null): Promise<number> {
+    try {
+      const result: {count: number}[] =
+        userId === null
+          ? await this.prisma.$queryRaw`
+            SELECT COUNT(*)::INTEGER as count 
+            FROM urls 
+            WHERE user_id IS NULL
+          `
+          : await this.prisma.$queryRaw`
+            SELECT COUNT(*)::INTEGER as count 
+            FROM urls 
+            WHERE user_id = ${userId}::bigint
+          `;
+      return result[0]?.count ?? 0;
+    } catch (error: any) {
+      this.logger.error(`Failed to count URLs for user ${userId}: ${error.message}`, error);
+      throw error;
+    }
+  }
 }

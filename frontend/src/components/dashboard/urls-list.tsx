@@ -3,6 +3,8 @@
 import {useState} from 'react'
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 import {UrlService} from '@/services/url.service'
+import {useAuth} from '@/contexts/auth.context'
+import {GUEST_USER_ID} from '@/lib/constants'
 import {UrlCard} from './url-card'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
@@ -12,16 +14,19 @@ import {toast} from 'sonner'
 export const UrlsList = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const queryClient = useQueryClient()
+  const {user, isAuthenticated} = useAuth()
+
+  const userId = isAuthenticated && user?.id ? user.id : GUEST_USER_ID
 
   const {data: urlsData, refetch} = useQuery({
-    queryKey: ['urls'],
-    queryFn: UrlService.getUrls,
+    queryKey: ['urls', userId],
+    queryFn: () => UrlService.getUserUrls(userId),
   })
 
   const updateSlugMutation = useMutation({
     mutationFn: ({slug, newSlug}: {slug: string; newSlug: string}) => UrlService.updateSlug(slug, newSlug),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['urls']})
+      queryClient.invalidateQueries({queryKey: ['urls', userId]})
       toast.success('URL updated successfully!')
     },
     onError: error => {
