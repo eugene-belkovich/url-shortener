@@ -21,7 +21,7 @@ export class UrlResponseDto {
   updatedAt: Date;
 
   @Expose()
-  visits?: number;
+  clicks?: number;
 
   @Expose()
   @Transform(({value}) => value?.toISOString())

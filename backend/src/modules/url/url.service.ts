@@ -116,7 +116,7 @@ export class UrlService {
       shortUrl: `${this.appUrl}/${urlRecord.slug}`,
       createdAt: urlRecord.created_at,
       updatedAt: urlRecord.updated_at,
-      visits: urlRecord.clicks || 0
+      clicks: urlRecord.clicks || 0
     };
   }
 }
