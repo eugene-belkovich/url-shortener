@@ -20,8 +20,8 @@ export class UrlController {
     @Body() createUrlDto: CreateUrlDto,
     @CurrentUser() user: UserResponseDto
   ): Promise<UrlResponseDto> {
-    this.logger.log(`Creating short URL for: ${createUrlDto.originalUrl} by user: ${user.email}`);
-    return await this.urlService.createShortUrl(createUrlDto, user.id);
+    this.logger.log(`Creating short URL for: ${createUrlDto.originalUrl} by user: ${user?.email}`);
+    return await this.urlService.createShortUrl(createUrlDto, user?.id);
   }
 
   @Put(':oldSlug')
@@ -29,7 +29,6 @@ export class UrlController {
   async updateSlug(
     @Param() param: UpdateSlugParams,
     @Body() updateSlugDto: UpdateSlugDto,
-    @CurrentUser() user: UserResponseDto
   ): Promise<UrlResponseDto> {
     this.logger.log(`Updating slug: ${param.oldSlug} -> ${updateSlugDto.newSlug}`);
     return await this.urlService.updateSlug(param.oldSlug, updateSlugDto.newSlug);
