@@ -1,0 +1,119 @@
+@baseUrl = http://localhost:3000
+@authToken = {{auth_token}}
+
+### Create Short URL - Authenticated User
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "originalUrl": "https://example.com"
+}
+
+> {%
+client.global.set("test_slug", response.body.slug);
+%}
+
+###
+
+### Create Short URL - Guest User (No Auth)
+POST {{baseUrl}}/urls
+Content-Type: application/json
+
+{
+  "originalUrl": "https://guest-example.com"
+}
+
+> {%
+client.global.set("guest_slug", response.body.slug);
+%}
+
+###
+
+### Create Short URL - Invalid URL
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "originalUrl": "not-a-valid-url"
+}
+
+###
+
+### Create Short URL - Missing originalUrl
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+}
+
+###
+
+### Create Short URL - Duplicate URL
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "originalUrl": "https://example.com"
+}
+
+###
+
+### Get All URLs
+GET {{baseUrl}}/urls
+
+###
+
+### Get User URLs - Authenticated
+GET {{baseUrl}}/urls/user
+Authorization: Bearer {{authToken}}
+
+###
+
+### Get User URLs - Guest (No Auth)
+GET {{baseUrl}}/urls/user
+
+###
+
+### Get User URLs - Specific User ID
+GET {{baseUrl}}/urls/user?userId=1
+
+###
+
+### Get Guest URLs - Explicit Guest ID
+GET {{baseUrl}}/urls/user?userId=guest
+
+###
+
+### Update URL Slug - Success
+PUT {{baseUrl}}/urls/{{test_slug}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "newSlug": "custom1"
+}
+
+###
+
+### Update URL Slug - No Auth
+PUT {{baseUrl}}/urls/{{test_slug}}
+Content-Type: application/json
+
+{
+  "newSlug": "custom2"
+}
+
+###
+
+### Update URL Slug - Invalid Format
+PUT {{baseUrl}}/urls/{{test_slug}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "newSlug": "invalid slug with spaces"
+}

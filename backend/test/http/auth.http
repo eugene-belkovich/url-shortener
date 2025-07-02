@@ -1,0 +1,80 @@
+@baseUrl = http://localhost:3000
+@authToken = {{auth_token}}
+
+### User Signup
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123",
+  "username": "testuser"
+}
+
+###
+
+### User Signin
+# @name signin
+POST {{baseUrl}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+> {%
+client.global.set("auth_token", response.body.accessToken);
+%}
+
+###
+
+### Get User Profile
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer {{authToken}}
+
+###
+
+### User Signin - Invalid Credentials
+POST {{baseUrl}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "wrongpassword"
+}
+
+###
+
+### User Signup - Invalid Email
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "password123",
+  "username": "testuser"
+}
+
+###
+
+### User Signup - Duplicate Email
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123",
+  "username": "duplicate"
+}
+
+###
+
+### Get Profile - No Token
+GET {{baseUrl}}/auth/profile
+
+###
+
+### Get Profile - Invalid Token
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer invalid-token
