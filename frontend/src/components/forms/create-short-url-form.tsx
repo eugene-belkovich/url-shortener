@@ -52,7 +52,6 @@ export const CreateShortUrlForm = ({onSuccess}: CreateUrlFormProps) => {
   const createUrlMutation = useMutation({
     mutationFn: UrlService.createUrl,
     onSuccess: data => {
-      console.log({data})
       toast.success('Short URL created successfully')
       setSubmitResponse(data.shortUrl)
       reset()

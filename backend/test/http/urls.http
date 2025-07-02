@@ -117,3 +117,45 @@ Content-Type: application/json
 {
   "newSlug": "invalid slug with spaces"
 }
+
+###
+
+### Create Multiple URLs for Testing
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "originalUrl": "https://google.com"
+}
+
+###
+
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "originalUrl": "https://github.com"
+}
+
+###
+
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "originalUrl": "https://stackoverflow.com"
+}
+
+###
+
+### Create Complex URL with Query Parameters
+POST {{baseUrl}}/urls
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "originalUrl": "https://example.com/path?param=value&other=test#section"
+}

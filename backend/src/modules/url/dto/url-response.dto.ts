@@ -1,7 +1,9 @@
 import {Expose, Transform} from 'class-transformer';
+import {IsOptional} from 'class-validator';
 
 export class UrlResponseDto {
-  id: string;
+  @IsOptional()
+  id?: string;
 
   @Expose()
   slug: string;
@@ -11,6 +13,9 @@ export class UrlResponseDto {
 
   @Expose()
   shortUrl: string;
+
+  @IsOptional()
+  userId?: string | null;
 
   @Expose()
   @Transform(({value}) => value?.toISOString())

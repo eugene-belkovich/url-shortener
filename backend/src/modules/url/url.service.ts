@@ -126,10 +126,11 @@ export class UrlService {
 
   private mapToResponseDto(urlRecord: UrlRow): UrlResponseDto {
     return {
-      id: urlRecord.id.toString(),
+      id: urlRecord.id,
       slug: urlRecord.slug,
       originalUrl: urlRecord.original_url,
       shortUrl: `${this.appUrl}/${urlRecord.slug}`,
+      userId: urlRecord.user_id,
       createdAt: urlRecord.created_at,
       updatedAt: urlRecord.updated_at,
       clicks: urlRecord.clicks || 0

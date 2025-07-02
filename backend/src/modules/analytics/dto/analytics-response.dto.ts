@@ -1,5 +1,5 @@
 export interface TrackEventDto {
-  urlId: string;
+  urlId: string | null;
   ipAddress?: string;
   userAgent?: string;
   visitedAt: Date;

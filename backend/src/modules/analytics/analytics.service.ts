@@ -11,7 +11,7 @@ export class AnalyticsService {
   async track(event: TrackEventDto): Promise<void> {
     try {
       await this.analyticsRepository.track({
-        urlId: typeof event.urlId === 'bigint' ? event.urlId : BigInt(event.urlId),
+        urlId: event.urlId,
         ipAddress: event.ipAddress,
         userAgent: event.userAgent,
         visitedAt: event.visitedAt,

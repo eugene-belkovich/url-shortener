@@ -52,6 +52,7 @@ services:
       - /usr/src/app/node_modules
     networks:
       - app-network
+    command: ./scripts/run_app_dev.sh
 
 volumes:
   postgres_data:

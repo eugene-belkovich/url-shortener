@@ -16,7 +16,7 @@ export interface CreateUrlParams {
 
 export interface TrackEventRow {
   id: string;
-  url_id: string;
+  url_id: string | null;
   ip_address?: string;
   user_agent?: string;
   visited_at: Date;
@@ -25,7 +25,7 @@ export interface TrackEventRow {
 }
 
 export interface TrackEventParams {
-  urlId: bigint;
+  urlId: string | null;
   ipAddress?: string;
   userAgent?: string;
   visitedAt: Date;

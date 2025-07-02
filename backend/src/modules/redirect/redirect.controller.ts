@@ -33,12 +33,11 @@ export class RedirectController {
       });
       return;
     }
-
     try {
       const ip = req.headers['x-forwarded-for']?.toString().split(',')[0].trim() || req.ip || '';
 
       await this.analyticsService.track({
-        urlId: urlRecord.id,
+        urlId: urlRecord.id || null,
         ipAddress: ip,
         userAgent: req.headers['user-agent'] || 'unknown',
         visitedAt: new Date(),

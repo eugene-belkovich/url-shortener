@@ -77,8 +77,7 @@ export class AuthService {
     const id = payload.sub;
 
     try {
-      const parsedId = typeof id === 'string' ? BigInt(id) : id;
-      const user = await this.userRepository.findById(parsedId.toString());
+      const user = await this.userRepository.findById(id);
       if (!user) {
         return null;
       }

@@ -11,8 +11,8 @@ export class UserRepository {
   async create(params: CreateUserParams): Promise<UserRow> {
     try {
       const result: UserRow[] = await this.prisma.$queryRaw`
-        INSERT INTO users (email, password, username, is_active, created_at, updated_at)
-        VALUES (${params.email}, ${params.password}, ${params.username}, true, NOW(), NOW())
+        INSERT INTO users (id, email, password, username, is_active, created_at, updated_at)
+        VALUES (gen_random_uuid(), ${params.email}, ${params.password}, ${params.username}, true, NOW(), NOW())
         RETURNING id, email, password, username, is_active, created_at, updated_at
       `;
 
@@ -48,7 +48,7 @@ export class UserRepository {
       const result: UserRow[] = await this.prisma.$queryRaw`
         SELECT id, email, password, username, is_active, created_at, updated_at
         FROM users
-        WHERE id = ${id}::bigint AND is_active = true
+        WHERE id = ${id} AND is_active = true
       `;
 
       return result.length > 0 ? result[0] : null;

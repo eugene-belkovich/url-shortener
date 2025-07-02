@@ -14,8 +14,8 @@ export class UrlRepository {
 
     try {
       const result: UrlRow[] = await prismaClient.$queryRaw`
-         INSERT INTO urls (original_url, slug, user_id, updated_at)
-         VALUES (${params.originalUrl}, ${params.slug}, ${params.userId}::bigint, NOW())
+         INSERT INTO urls (id, original_url, slug, user_id, updated_at)
+         VALUES (gen_random_uuid(), ${params.originalUrl}, ${params.slug}, ${params.userId}, NOW())
          RETURNING id, original_url, slug, user_id, created_at, updated_at
        `;
       if (result.length === 0) {
@@ -25,7 +25,7 @@ export class UrlRepository {
       this.logger.log(`Created URL with slug: ${params.slug}`);
       return result[0];
     } catch (error) {
-      this.logger.error(`Failed to create URL: ${error.message}`, error);
+      this.logger.error(`Failed to create URL: ${error?.message}`, error);
       throw error;
     }
   }
@@ -33,7 +33,7 @@ export class UrlRepository {
   async findAll(): Promise<UrlRow[]> {
     try {
       const result: UrlRow[] = await this.prisma.$queryRaw`
-        SELECT 
+       SELECT 
           u.id, 
           u.original_url, 
           u.slug, 
@@ -43,8 +43,8 @@ export class UrlRepository {
           COALESCE(COUNT(a.id), 0)::INTEGER as clicks
         FROM urls u
         LEFT JOIN analytics a ON u.id = a.url_id
-        GROUP BY u.id
-        ORDER BY clicks DESC
+        GROUP BY u.id, u.original_url, u.slug, u.user_id, u.created_at, u.updated_at
+        ORDER BY clicks DESC, u.created_at DESC
       `;
 
       return result;
@@ -64,7 +64,7 @@ export class UrlRepository {
       `;
       return result.length > 0 ? result[0] : null;
     } catch (error) {
-      this.logger.error(`Failed to find URL by slug ${slug}: ${error.message}`, error);
+      this.logger.error(`Failed to find URL by slug ${slug}: ${error?.message}`, error);
       throw error;
     }
   }
@@ -79,7 +79,7 @@ export class UrlRepository {
       `;
       return result.length > 0 ? result[0] : null;
     } catch (error) {
-      this.logger.error(`Failed to find URL by originalUrl ${originalUrl}: ${error.message}`, error);
+      this.logger.error(`Failed to find URL by originalUrl ${originalUrl}: ${error?.message}`, error);
       throw error;
     }
   }
@@ -102,7 +102,7 @@ export class UrlRepository {
       this.logger.log(`Updated slug ${oldSlug} -> ${newSlug}`);
       return result[0];
     } catch (error) {
-      this.logger.error(`Failed to update slug: ${error.message}`, error);
+      this.logger.error(`Failed to update slug: ${error?.message}`, error);
       throw error;
     }
   }
@@ -119,7 +119,7 @@ export class UrlRepository {
       `;
       return result.length > 0;
     } catch (error) {
-      this.logger.error(`Failed to check original_url existence ${originalUrl}: ${error.message}`, error);
+      this.logger.error(`Failed to check original_url existence ${originalUrl}: ${error?.message}`, error);
       throw error;
     }
   }
@@ -137,7 +137,7 @@ export class UrlRepository {
 
       return result.length > 0;
     } catch (error) {
-      this.logger.error(`Failed to check slug existence ${slug}: ${error.message}`, error);
+      this.logger.error(`Failed to check slug existence ${slug}: ${error?.message}`, error);
       throw error;
     }
   }
@@ -149,7 +149,7 @@ export class UrlRepository {
       `;
       return result[0]?.count ?? 0;
     } catch (error: any) {
-      this.logger.error(`Failed to count URLs: ${error.message}`, error);
+      this.logger.error(`Failed to count URLs: ${error?.message}`, error);
       throw error;
     }
   }
@@ -159,34 +159,34 @@ export class UrlRepository {
       const result: UrlRow[] =
         userId === null
           ? await this.prisma.$queryRaw`
-            SELECT 
-              u.id, 
-              u.original_url, 
-              u.slug, 
-              u.user_id, 
-              u.created_at, 
-              u.updated_at,
-              COALESCE(COUNT(a.id), 0)::INTEGER as clicks
-            FROM urls u
-            LEFT JOIN analytics a ON u.id = a.url_id
-            WHERE u.user_id IS NULL
-            GROUP BY u.id
-            ORDER BY u.created_at DESC
+           SELECT 
+                u.id, 
+                u.original_url, 
+                u.slug, 
+                u.user_id, 
+                u.created_at, 
+                u.updated_at,
+                COALESCE(COUNT(a.id), 0)::INTEGER as clicks
+              FROM urls u
+              LEFT JOIN analytics a ON u.id = a.url_id
+              WHERE u.user_id IS NULL
+              GROUP BY u.id, u.original_url, u.slug, u.user_id, u.created_at, u.updated_at
+              ORDER BY u.created_at DESC
           `
           : await this.prisma.$queryRaw`
             SELECT 
-              u.id, 
-              u.original_url, 
-              u.slug, 
-              u.user_id, 
-              u.created_at, 
-              u.updated_at,
-              COALESCE(COUNT(a.id), 0)::INTEGER as clicks
-            FROM urls u
-            LEFT JOIN analytics a ON u.id = a.url_id
-            WHERE u.user_id = ${userId}::bigint
-            GROUP BY u.id
-            ORDER BY u.created_at DESC
+                u.id, 
+                u.original_url, 
+                u.slug, 
+                u.user_id, 
+                u.created_at, 
+                u.updated_at,
+                COALESCE(COUNT(a.id), 0)::INTEGER as clicks
+              FROM urls u
+              LEFT JOIN analytics a ON u.id = a.url_id
+              WHERE u.user_id = ${userId}
+              GROUP BY u.id, u.original_url, u.slug, u.user_id, u.created_at, u.updated_at
+              ORDER BY u.created_at DESC
           `;
 
       return result;
@@ -208,11 +208,11 @@ export class UrlRepository {
           : await this.prisma.$queryRaw`
             SELECT COUNT(*)::INTEGER as count 
             FROM urls 
-            WHERE user_id = ${userId}::bigint
+            WHERE user_id = ${userId}
           `;
       return result[0]?.count ?? 0;
     } catch (error: any) {
-      this.logger.error(`Failed to count URLs for user ${userId}: ${error.message}`, error);
+      this.logger.error(`Failed to count URLs for user ${userId}: ${error?.message}`, error);
       throw error;
     }
   }

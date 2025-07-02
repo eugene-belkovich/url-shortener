@@ -71,7 +71,7 @@ async function seedUrls(users: User[]): Promise<Url[]> {
   for (let i = 0; i < sampleUrls.length; i++) {
     const urlData = sampleUrls[i];
     const randomUser = users[Math.floor(Math.random() * users.length)];
-    const createdAt = await generateRandomDate(45);
+    const createdAt = generateRandomDate(45);
 
     const url = await prisma.url.upsert({
       where: {slug: urlData.slug},
