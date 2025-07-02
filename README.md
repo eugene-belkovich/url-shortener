@@ -51,3 +51,9 @@ chmod +x ./backend/scripts/run_app_dev.sh
 cd ./frontend && npm i && npm run dev
 cd ./backend && npm i && docker-compose up -d
 ```
+### Or
+```bash
+cd ./frontend && npm i && npm run dev
+cd ./backend && sed -i '' 's|^DATABASE_URL=.*|DATABASE_URL=postgresql://username:password@localhost:5432/url_shortener?schema=public|' .env
+npm run start:dev
+```
