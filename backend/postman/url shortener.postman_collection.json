@@ -84,6 +84,25 @@
 			"response": []
 		},
 		{
+			"name": "get all urls user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/urls",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"urls"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "get all urls",
 			"request": {
 				"method": "GET",
