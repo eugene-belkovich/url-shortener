@@ -1,3 +1,8 @@
+## Demo video
+
+[[Watch the video]](https://www.loom.com/share/c1d8aef873a34728824e1f3e3be335cd?sid=f2e25678-3337-4e23-848a-ca06cbebfda2)
+https://www.loom.com/share/c1d8aef873a34728824e1f3e3be335cd
+
 ## Getting Started
 
 ### 1. Goto backend folder
